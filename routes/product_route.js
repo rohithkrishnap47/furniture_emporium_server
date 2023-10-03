@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/admin/product');
+const uploader = require("../services/multer")
+const cloudinary = require("../services/cloudinary")
 
 // Create a new product
-router.post('/products', async (req, res) => {
+
+router.post('/createProducts',async (req, res) => {
     try {
         const result = await productController.createProduct(req.body);
         res.status(result.statusCode).json(result);
@@ -56,6 +59,23 @@ router.delete('/products/:id', async (req, res) => {
         res.status(result.statusCode).json(result);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+// product file upload
+
+
+router.post('/upload-products',uploader.single("file"), async (req, res) => {
+    try {
+        console.log("req",req.file)
+        const upload = await cloudinary.uploader.upload(req.file.path,{ resource_type: "raw" });
+        return res.json({
+          success: true,
+          file: upload.secure_url,
+        });
+    } catch (error) {
+      console.log(error)
     }
 });
 

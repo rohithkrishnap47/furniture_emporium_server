@@ -1,5 +1,5 @@
-const db = require("../database")
 const nodemailer = require('nodemailer');
+const adminModal = require("../../models/adminModel");
 
 //------------------------------------------------------------------------------ 
 const transporter = nodemailer.createTransport({
@@ -17,46 +17,50 @@ const transporter = nodemailer.createTransport({
 
 // ADMIN  
 const registerAdmin = async(body) => {
-    console.log(body);
-    let user=await db.Admin.findOne({ username: body.username })
+ 
+    const username = body.username
+    
+    let user=await adminModal.findOne({ username: username })
         // .then((User) => {
+            console.log(username,user);
             if (user) {
                 return {
                     statusCode: 401,
-                    message: "ALREADY REGISTERED"
+                    message: "ALREADY REGISTERED "
                 };
             }
-            // else {
-                console.log(body, "buhahaaa!!!")
-                const newUser = new db.Admin({
+             else {
+                console.log("ferwg",body);
+                const newUser = new adminModal({
                     name: body.name,
                     username: body.username,
-                    password: body.password,
-                    role: body.role
+                    role: body.role,
                 });
+              
                 let new_user =await newUser.save()
                 if (new_user){
                     sentInvitation(body)
                 }
-               
-                return {
+                  
+                return { 
                     statusCode: 200,
                     message: "HURRAy!!"
                 }
-            // }
+            }
         // });
 }
 // NODE mailer function to sent mail;
 function sentInvitation(user){
-    db.Admin.findOne({ username: user.username })
+    adminModal.findOne({ username: user.username })
     .then(user=>{
-        console.log(user);
+        console.log("message",user);
         const mailOptions = {
             from: 'filesrkp@gmail.com',
             to: user.username,
             subject: 'WELCOME TO FURNITURE EMPORIUM',
             text: 'This is a test email sent using ',
             html: `<a href='http://127.0.0.1:5501/set_password.html?id=${user._id}' class='button'>SET PASSWORD</a>`
+            
             
         };
         transporter.sendMail(mailOptions, (error, info) => {
@@ -75,7 +79,7 @@ function sentInvitation(user){
 
 // update
 const updateAdmin = (adminId, body) => {
-    return db.Admin.findByIdAndUpdate(
+    return adminModal.findByIdAndUpdate(
         adminId,
         {
             name: body.name,
@@ -111,7 +115,7 @@ const updateAdmin = (adminId, body) => {
 
 // ALL_ADMINS
 const getAllAdmins = () => {
-    return db.Admin.find({})
+    return adminModal.find({})
         .then((admins) => {
             return {
                 statusCode: 200,
@@ -130,7 +134,7 @@ const getAllAdmins = () => {
 
 // DELETE ADMIN
 const deleteAdmin = (adminId) => {
-    return db.Admin.findByIdAndDelete(adminId)
+    return adminModal.findByIdAndDelete(adminId)
         .then((admin) => {
             if (!admin) {
                 return {

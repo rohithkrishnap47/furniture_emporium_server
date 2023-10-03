@@ -8,6 +8,7 @@ router.post("/adminRegister", (req, res) => {
     // console.log(req.body)
     adminController.registerAdmin(req.body).then(result => {
         res.status(result.statusCode).json(result)
+        // console.log("helloooo",result.statusCode);
     })
 })
 // Update 
@@ -23,7 +24,6 @@ router.put("/updateAdmin/:id", (req, res) => {
 // GET
 router.get("/getAdmin/:id", (req, res) => {
     const productId = req.params.id;
-
     adminController.getAdmin(productId).then(result => {
         res.status(result.statusCode).json(result);
     });

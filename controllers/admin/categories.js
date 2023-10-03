@@ -1,92 +1,61 @@
-
-// REQUIRE from database
-const db = require("../database")
-// const db = require("models/categoryModel.js")
-
-
-//------------------------------------------------------------------------------ 
+const categoryModal = require("../../models/categoryModel");
 
 // CATEGORIES
 // ADD_category
 const createcategory = async (categoryData) => {
+  console.log("categdata", categoryData)
   // validating categoryname, categoryimage, description
-  if (!categoryData.categoryName) {
-    return {
-      statusCode: 400,
-      message: "Category name not found"
-    }
-  }
+  // if (!categoryData.categoryName) {
+  //   return {
+  //     statusCode: 400,
+  //     message: "Category name not found"
+  //   }
+  // }
   // if (!categoryData.categoryImages) {
   //   return {
   //     statusCode: 400,
   //     message: "Category Image not found"
   //   }
   // }
-  if (!categoryData.description) {
-    return {
-      statusCode: 400,
-      message: "Category Description not found"
-    }
-  }
+  // if (!categoryData.description) {
+  //   return {
+  //     statusCode: 400,
+  //     message: "Category Description not found"
+  //   }
+  // }
 
   try {
-    const caT = await db.Category.findOne({ categoryName: categoryData.categoryName })
+    const caT = await categoryModal.findOne({ categoryName: categoryData.categoryName })
     console.log("cat_cons", caT);
     if (caT) {
       return {
-        statusCode: 401,
+        statusCode: 400,
         message: "CATEGORY EXISTS",
         data: caT.categoryName,
       };
     }
-    else {
-      const newcategories = new db.Category({
+      const newcategories = new categoryModal({
         categoryName: categoryData.categoryName,
         categoryImages: categoryData.categoryImages,
         description: categoryData.description,
       })
-      newcategories.save()
+      await newcategories.save()
       return {
         statusCode: 200,
         message: "category created"
       }
     }
-  } catch (error) {
+  catch (error) {
     console.log(error);
   }
 
-
-
-
-  // .then((category) => {
-  //     console.log("kirrrrrrr",category);
-  //     if (category) {
-  //       return {
-  //         statusCode: 401,
-  //         message: "CATEGORY EXISTS",
-  //         data: category,
-  //       };
-  //     }
-  //     else {
-  //       const newcategories = new db.Category({
-  //         categoryName: categoryData.categoryName,
-  //         categoryImages: categoryData.categoryImages,
-  //         description: categoryData.description,
-  //       })
-  //       newcategories.save()
-  //       return {
-  //         statusCode: 200,
-  //         message: "category created"
-  //       }
-  //     }
-  //   });
 };
 
 
 // GET_ALL_CATEGOrIES
 
 const getAllcategorys = () => {
-  return db.Category.find()
+  return categoryModal.find()
     .then((categorys) => {
       return {
         statusCode: 200,
@@ -105,7 +74,7 @@ const getAllcategorys = () => {
 
 // GET_SINGLE_CATEGOrIES
 const getcategoryById = (categoryId) => {
-  return db.Category.findById(categoryId)
+  return categoryModal.findById(categoryId)
     .then((category) => {
       if (!category) {
         return {
@@ -132,7 +101,7 @@ const getcategoryById = (categoryId) => {
 //   UPDATE_CATEGOrIES
 
 const updatecategory = (categoryId, updatedcategoryData) => {
-  return db.Category.findByIdAndUpdate(
+  return categoryModal.findByIdAndUpdate(
     categoryId,
     updatedcategoryData,
     { new: true }
@@ -163,7 +132,7 @@ const updatecategory = (categoryId, updatedcategoryData) => {
 
 // DELETE_CATEGOrIES
 const deletecategory = (categoryId) => {
-  return db.Category.findByIdAndDelete(categoryId)
+  return categoryModal.findByIdAndDelete(categoryId)
     .then((category) => {
       if (!category) {
         return {
