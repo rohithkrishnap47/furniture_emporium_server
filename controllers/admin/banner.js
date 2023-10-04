@@ -4,6 +4,14 @@ const bannerModal = require("../../models/bannerModel")
 
 // create banner
 const createBanner = async (bannerData) => {
+    const required = ["bannerTitle", "bannerImage", "description"]
+    const validationError = bodyRequiredDataValidator(bannerData, required);
+    if (validationError) {
+        return {
+            statusCode: 400,
+            error: validationError,
+        }
+    }
     return bannerModal.findOne({ bannerId: bannerData.bannerId })
         .then((banner) => {
             // if (banner) {
@@ -13,19 +21,19 @@ const createBanner = async (bannerData) => {
             //         data: banner,
             //     };
             // } else {
-                const newBanner = new bannerModal({
-                    bannerId: bannerData.bannerId,
-                    bannerImage: bannerData.bannerImage,
-                    description: bannerData.description,
-                    bannerTitle: bannerData.bannerTitle,
+            const newBanner = new bannerModal({
+                bannerId: bannerData.bannerId,
+                bannerImage: bannerData.bannerImage,
+                description: bannerData.description,
+                bannerTitle: bannerData.bannerTitle,
 
-                });
-                newBanner.save();
-                return {
-                    statusCode: 200,
-                    message: "Banner created successfully",
-                };
-            
+            });
+            newBanner.save();
+            return {
+                statusCode: 200,
+                message: "Banner created successfully",
+            };
+
         })
         .catch((error) => {
             return {
@@ -83,9 +91,21 @@ const getBannerById = (bannerId) => {
 
 // UPDATE banner
 const updateBanner = (bannerId, updatedBannerData) => {
+    const required = ["bannerTitle", "bannerImage", "description"]
+    const validationError = bodyRequiredDataValidator(body, required);
+    if (validationError) {
+        return {
+            statusCode: 400,
+            error: validationError,
+        }
+    }
     return bannerModal.findByIdAndUpdate(
         bannerId,
-        updatedBannerData,
+        {
+            bannerImage: updatedBannerData.bannerImage,
+            description: updatedBannerData.description,
+            bannerTitle: updatedBannerData.bannerTitle,
+        },
         { new: true }
     )
         .then((banner) => {
@@ -113,8 +133,8 @@ const updateBanner = (bannerId, updatedBannerData) => {
 
 // DELETE banner
 const deleteBanner = (bannerId) => {
-    console.log("ban",bannerId);
-    return Banner.findOneAndDelete(bannerId)
+    console.log("banDelete", bannerId);
+    return Banner.findByIdAndDelete(bannerId)
         .then((banner) => {
             if (!banner) {
                 return {
@@ -138,12 +158,25 @@ const deleteBanner = (bannerId) => {
             };
         });
 };
+//------------------------------------------------------------------------------
+// Validator function
+const bodyRequiredDataValidator = (body, fields) => {
+    let required = []
+    fields.forEach((key) => {
+      if ([undefined, '', null].includes(body[key])) {
+        required.push(key)
+      }
+    })
+    return required.length ? { "missing": required } : undefined
+  }
+  //------------------------------------------------------------------------------ 
+
 
 // _____________________________________________________________________
 module.exports = {
-    createBanner, 
-    getAllBanners, 
-    getBannerById, 
-    updateBanner, 
+    createBanner,
+    getAllBanners,
+    getBannerById,
+    updateBanner,
     deleteBanner
 };

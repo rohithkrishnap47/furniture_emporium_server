@@ -1,12 +1,13 @@
 const nodemailer = require('nodemailer');
 const adminModal = require("../../models/adminModel");
+const { response } = require('express');
 
 //------------------------------------------------------------------------------ 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     // host: "http://localhost:",
     // port: 5001,
-    
+
     auth: {
         user: 'emporiumfurniture00@gmail.com',
         pass: 'zmix kbda ytdf anvt',
@@ -16,61 +17,69 @@ const transporter = nodemailer.createTransport({
 
 
 // ADMIN  
-const registerAdmin = async(body) => {
- 
+const registerAdmin = async (body) => {
+    const required = ["name", "username"]
+    const validationError = bodyRequiredDataValidator(body, required);
+    if (validationError) {
+        return{
+            statusCode:400,
+            error:validationError,
+        }
+    }
     const username = body.username
-    
-    let user=await adminModal.findOne({ username: username })
-        // .then((User) => {
-            console.log(username,user);
-            if (user) {
-                return {
-                    statusCode: 401,
-                    message: "ALREADY REGISTERED "
-                };
-            }
-             else {
-                console.log("ferwg",body);
-                const newUser = new adminModal({
-                    name: body.name,
-                    username: body.username,
-                    role: body.role,
-                });
-              
-                let new_user =await newUser.save()
-                if (new_user){
-                    sentInvitation(body)
-                }
-                  
-                return { 
-                    statusCode: 200,
-                    message: "HURRAy!!"
-                }
-            }
-        // });
+
+    let user = await adminModal.findOne({ username: username })
+    // .then((User) => {
+    console.log(username, user);
+    if (user) {
+        return {
+            statusCode: 401,
+            message: "ALREADY REGISTERED "
+        };
+    }
+    else {
+        console.log("ferwg", body);
+
+        const newUser = new adminModal({
+            name: body.name,
+            username: body.username,
+            role: body.role,
+        });
+
+        let new_user = await newUser.save()
+        if (new_user) {
+            sentInvitation(body)
+        }
+
+        return {
+            statusCode: 200,
+            message: "HURRAy!!"
+        }
+    }
+    // });
 }
 // NODE mailer function to sent mail;
-function sentInvitation(user){
+function sentInvitation(user) {
     adminModal.findOne({ username: user.username })
-    .then(user=>{
-        console.log("message",user);
-        const mailOptions = {
-            from: 'filesrkp@gmail.com',
-            to: user.username,
-            subject: 'WELCOME TO FURNITURE EMPORIUM',
-            text: 'This is a test email sent using ',
-            html: `<a href='http://127.0.0.1:5501/set_password.html?id=${user._id}' class='button'>SET PASSWORD</a>`
-            
-            
-        };
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-            } else {
-                console.log('Email sent:', info.response);
-            }
-        });
-    })
+        .then(user => {
+            console.log("message", user);
+            const mailOptions = {
+                from: 'filesrkp@gmail.com',
+                to: user.username,
+                subject: 'WELCOME TO FURNITURE EMPORIUM',
+                text: 'This is a test email sent using ',
+                html: `<a href='http://127.0.0.1:5501/set_password.html?id=${user._id}' class='button'>SET PASSWORD</a>`
+
+
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending email:', error);
+                } else {
+                    console.log('Email sent:', info.response);
+                }
+            });
+        })
 }
 
 
@@ -79,11 +88,18 @@ function sentInvitation(user){
 
 // update
 const updateAdmin = (adminId, body) => {
+    // const required = ["name", "username"]
+    // const validationError = bodyRequiredDataValidator(body, required);
+    // if (validationError) {
+    //     return{
+    //         statusCode:400,
+    //         error:validationError,
+    //     }
+    // }
     return adminModal.findByIdAndUpdate(
         adminId,
         {
             name: body.name,
-            username: body.username,
             password: body.password,
             role: body.role
         },
@@ -157,7 +173,15 @@ const deleteAdmin = (adminId) => {
 };
 
 //------------------------------------------------------------------------------
-
+const bodyRequiredDataValidator = (body, fields) => {
+    let required= []
+    fields.forEach((key) => {
+        if ([undefined, '', null].includes(body[key])) {
+            required.push(key)
+        }
+    })
+    return required.length ? { "missing": required } : undefined
+}
 
 
 
