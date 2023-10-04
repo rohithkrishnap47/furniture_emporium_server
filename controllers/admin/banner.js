@@ -1,3 +1,4 @@
+const Banner = require("../../models/bannerModel");
 const bannerModal = require("../../models/bannerModel")
 
 
@@ -5,13 +6,13 @@ const bannerModal = require("../../models/bannerModel")
 const createBanner = async (bannerData) => {
     return bannerModal.findOne({ bannerId: bannerData.bannerId })
         .then((banner) => {
-            if (banner) {
-                return {
-                    statusCode: 401,
-                    message: "Banner with the same ID already exists",
-                    data: banner,
-                };
-            } else {
+            // if (banner) {
+            //     return {
+            //         statusCode: 401,
+            //         message: "Banner with the same ID already exists",
+            //         data: banner,
+            //     };
+            // } else {
                 const newBanner = new bannerModal({
                     bannerId: bannerData.bannerId,
                     bannerImage: bannerData.bannerImage,
@@ -24,7 +25,7 @@ const createBanner = async (bannerData) => {
                     statusCode: 200,
                     message: "Banner created successfully",
                 };
-            }
+            
         })
         .catch((error) => {
             return {
@@ -112,7 +113,8 @@ const updateBanner = (bannerId, updatedBannerData) => {
 
 // DELETE banner
 const deleteBanner = (bannerId) => {
-    return bannerModal.findOneAndDelete(bannerId)
+    console.log("ban",bannerId);
+    return Banner.findOneAndDelete(bannerId)
         .then((banner) => {
             if (!banner) {
                 return {
@@ -139,5 +141,9 @@ const deleteBanner = (bannerId) => {
 
 // _____________________________________________________________________
 module.exports = {
-    createBanner, getAllBanners, getBannerById, updateBanner, deleteBanner
+    createBanner, 
+    getAllBanners, 
+    getBannerById, 
+    updateBanner, 
+    deleteBanner
 };
