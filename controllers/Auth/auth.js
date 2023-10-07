@@ -1,31 +1,33 @@
 const { response } = require('express');
 const adminModal = require("../../models/adminModel");
 
-const login=async(a)=>{
-  console.log(a,"ssss");
-  const username=a.username
-  const password=a.password
-  try{
-  const user = await adminModal.findOne({ username, password });
+const login=async(body)=>{
   
+  console.log(body);
+  const username1=body.username.trim()
+  //console.log("greb", username1);
+ // const password=body.password
+  try{
+  const user = await adminModal.findOne({username:username1});
+  console.log("vv",user);
         if (user) {
-          res.status(200).json({
+          return{
             statusCode: 200,
             message: 'Login successful',
             data: user,
-          });
+          };
         } else {
-          res.status(401).json({
+          return{
             statusCode: 401,
             message: 'Invalid credentials',
-          });
+          };
         }
       } catch (error) {
-        res.status(500).json({
+        return{
           statusCode: 500,
           message: 'Internal Server Error',
           error: error.message,
-        });
+        };
       }
 
 }

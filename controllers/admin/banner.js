@@ -1,6 +1,6 @@
 const Banner = require("../../models/bannerModel");
 const bannerModal = require("../../models/bannerModel")
-
+// app.use(express.json());
 
 // create banner
 const createBanner = async (bannerData) => {
@@ -92,7 +92,7 @@ const getBannerById = (bannerId) => {
 // UPDATE banner
 const updateBanner = (bannerId, updatedBannerData) => {
     const required = ["bannerTitle", "bannerImage", "description"]
-    const validationError = bodyRequiredDataValidator(body, required);
+    const validationError = bodyRequiredDataValidator(updatedBannerData, required);
     if (validationError) {
         return {
             statusCode: 400,
