@@ -42,7 +42,7 @@ router.delete("/deleteAdmin/:id", (req, res) => {
     const productId = req.params.id;
 
     adminController.deleteAdmin(productId).then(result => {
-        res.status(result.statusCode).json(result);
+        res.status(result.statusCode).json(result); 
     });
 });
 

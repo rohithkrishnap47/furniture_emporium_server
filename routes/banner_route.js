@@ -6,6 +6,7 @@ const bannerController = require('../controllers/admin/banner');
 router.post("/createBanner", (req, res) => {
     bannerController.createBanner(req.body).then(result => {
         res.status(result.statusCode).json(result);
+        // console.log(req.body);
     });
 });
 

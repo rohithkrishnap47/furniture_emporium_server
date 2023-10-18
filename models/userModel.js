@@ -7,6 +7,7 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
+        unique:true
     },
     password:{
         type:String,
@@ -14,11 +15,16 @@ const userSchema = new Schema({
     },
     isEmailverified:{
         type:Boolean,
-        required:true
+        required:true,
+        default:true
     },
     userToken:{
         type:String,
         // required
+    },
+    coins:{
+        type:Number,
+        default:0
     }
 })
 const User = mongoose.model("User", userSchema);

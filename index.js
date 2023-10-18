@@ -11,7 +11,7 @@ app.use(cors({ origin: "*" }))
 // PORT DECLARING
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-    console.log("port is now running",PORT)
+    console.log("port is now running", PORT)
 })
 // database connect 
 database.connect()
@@ -20,4 +20,4 @@ database.connect()
 require("./routes/index")(app)
 
 
-module.exports = app 
+module.exports = { app, router }

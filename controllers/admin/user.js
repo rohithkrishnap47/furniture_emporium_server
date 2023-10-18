@@ -1,20 +1,30 @@
 const userModal = require("../../models/userModel");
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcryptjs');
 
 
 // create user
 const registerUser = async (body) => {
-    const requiredFields = ["username", "password", "isEmailverified"];
-    const validationError = bodyRequiredDataValidator = (body, requiredFields);
-    if (validationError) {
-        return {
-            statusCode: 400,
-            error: validationError
-        };
-    }
+    // const requiredFields = ["username", "password", "isEmailverified"];
+    // const validationError = bodyRequiredDataValidator = (body, requiredFields);
+    // if (validationError) {
+    //     return {
+    //         statusCode: 400,
+    //         error: validationError
+    //     };
+    // }
     const { username, password, isEmailverified } = body;
+    console.log(body);
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const existingUser=await userModal.findOne({username})
+        console.log(existingUser);
+        if(existingUser){
+            return {
+                statusCode: 401,
+                message: "User Exists!!!"
+            }
+        }
+        const salt=await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt);
         const newUser = new userModal({
             username: username,
             password: hashedPassword,
@@ -28,6 +38,7 @@ const registerUser = async (body) => {
 
     }
     catch (error) {
+        console.log(error,"hahaahaaa");
         return {
             statusCode: 500,
             message: "internal server error!!!!"
