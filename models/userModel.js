@@ -7,24 +7,27 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique:true
+        unique: true
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+        type: String,
+        required: true,
     },
-    isEmailverified:{
-        type:Boolean,
-        required:true,
-        default:true
+    isEmailverified: {
+        type: Boolean,
+        required: true,
+        default: true
     },
-    userToken:{
-        type:String,
-        // required
+    userStatus: {
+        type: Boolean,
+        default: true,
     },
-    coins:{
-        type:Number,
-        default:0
+    userToken: {
+        type: String,
+    },
+    coins: {
+        type: Number,
+        default: 0
     }
 })
 const User = mongoose.model("User", userSchema);
