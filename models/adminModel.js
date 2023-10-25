@@ -20,7 +20,7 @@ const adminSchema = new Schema({
     status: {
         type: String
 
-    },
+    }
 })
 
 const adminModal = mongoose.model("Admin", 

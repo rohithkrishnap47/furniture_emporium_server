@@ -1,5 +1,6 @@
 const authmodel = require('../../models/authModal');
 const bcrypt = require("bcrypt");
+const jwt=require("jsonwebtoken")
 
 const loginUser = async (body) => {
     const { emailaddress, password } = body;
@@ -10,7 +11,7 @@ const loginUser = async (body) => {
         if (!user) {
             return {
                 statusCode: 401,
-                message: "Invalid credentials"
+                message: "User not found"
             };
         }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -21,7 +22,7 @@ const loginUser = async (body) => {
                 message: "Invalid credentials"
             };
         }
-        const token = jwt.sign({ userId: user._id }, 'yourSecretKey', { expiresIn: '1h' });
+        // const token = jwt.sign({ userId: user._id }, 'yourSecretKey', { expiresIn: '1h' });
 
         return {
             statusCode: 200,
@@ -37,4 +38,5 @@ const loginUser = async (body) => {
         };
     }
 }
-module.
+
+module.exports=loginUser;

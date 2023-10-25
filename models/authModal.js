@@ -20,7 +20,13 @@ const authSchema = new Schema({
     },
     password: {
         type: String
-    }
+    },
+    createdAt: {
+        type: Date
+    },
+    updatedAt: {
+        type: Date
+    },
 })
 const Auth = mongoose.model("Auth", authSchema);
 module.exports = Auth
