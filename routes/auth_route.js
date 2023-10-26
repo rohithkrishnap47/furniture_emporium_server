@@ -10,4 +10,18 @@ router.post("/login", (req, res) => {
     })
 })
 
+router.post("/register", async (req, res) => {
+    try {
+        const result = await registerUser(req.body); 
+        res.status(result.statusCode).json(result); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
+    }
+});
+
+
 module.exports = router 
