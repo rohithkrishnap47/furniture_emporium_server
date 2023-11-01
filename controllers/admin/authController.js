@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const loginUser = async (body) => {
     const { emailaddress, password } = body;
     try {
-        const user = await authmodel.findOne({ username });
+        const user = await authmodel.findOne({ emailaddress });
 
 
         if (!user) {
@@ -22,7 +22,7 @@ const loginUser = async (body) => {
                 message: "Invalid credentials"
             };
         }
-        // const token = jwt.sign({ userId: user._id }, 'yourSecretKey', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, 'wwwwwwww', { expiresIn: '24h' });
 
         return {
             statusCode: 200,
@@ -75,4 +75,4 @@ const registerUser = async (body) => {
 }
 
 
-module.exports = loginUser,registerUser;
+module.exports ={ loginUser,registerUser};

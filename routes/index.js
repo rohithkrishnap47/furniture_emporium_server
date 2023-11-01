@@ -1,4 +1,4 @@
-const router = require("./admin_route")
+// const router = require("./admin_route")
 
 module.exports=(app)=>{
     app.use("/admin",require("./admin_route")),
@@ -8,4 +8,4 @@ module.exports=(app)=>{
     app.use("/auth",require("./auth_route"))
     app.use("/user",require("./user_route"))
 }
-//module.exports=router
+// module.exports=router

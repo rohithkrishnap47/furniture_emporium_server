@@ -6,11 +6,11 @@ const userController=require("../controllers/admin/user")
 
 
 
-router.post("/register", (req, res) => {
-    userController.registerUser(req.body).then(result => {
-        res.status(result.statusCode).json(result)
-    })
-})
+// router.post("/register", (req, res) => {
+//     userController.registerUser(req.body).then(result => {
+//         res.status(result.statusCode).json(result)
+//     })
+// })
 
 router.get("/getuser/:id", (req, res) => {
     const userId = req.params.id;
@@ -19,6 +19,18 @@ router.get("/getuser/:id", (req, res) => {
     });
 });
 
+// get all users
+router.get("/listusers", (req, res) => {
+    userController.getAllUsers().then(result => {
+        res.status(result.statusCode).json(result);
+    }).catch(error => {
+        console.error(error);
+        res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
+    });
+});
 
-// router.post("/")
+
 module.exports=router

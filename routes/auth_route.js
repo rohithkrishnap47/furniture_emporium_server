@@ -1,10 +1,10 @@
 const express = require('express')
-const authController = require('../controllers/Auth/auth')
+const authController = require('../controllers/admin/authController')
 const router = express.Router()
 
 router.post("/login", (req, res) => {
     console.log(req.body)
-    authController.login(req.body).then(result => {
+    authController.loginUser(req.body).then(result => {
         res.status(result.statusCode).json(result)
         // console.log("helloooo",result.statusCode);
     })
@@ -12,7 +12,7 @@ router.post("/login", (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        const result = await registerUser(req.body); 
+        const result = await authController.registerUser(req.body); 
         res.status(result.statusCode).json(result); 
     } catch (error) {
         console.error(error);

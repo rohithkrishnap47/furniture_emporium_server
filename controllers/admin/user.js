@@ -1,4 +1,5 @@
 const userModal = require("../../models/userModel");
+const authModal = require("../../models/authModal");
 const bcrypt = require('bcryptjs');
 
 
@@ -15,7 +16,7 @@ const registerUser = async (body) => {
     const { username, password, isEmailverified } = body;
     console.log(body);
     try {
-        const existingUser=await userModal.findOne({username})
+        const existingUser=await authModal.findOne({username})
         console.log(existingUser);
         if(existingUser){
             return {
@@ -25,7 +26,7 @@ const registerUser = async (body) => {
         }
         const salt=await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new userModal({
+        const newUser = new authModal({
             username: username,
             password: hashedPassword,
             isEmailverified: isEmailverified
@@ -49,7 +50,7 @@ const registerUser = async (body) => {
 // get user by id
 const getUserbyId = async (userId) => {
     try {
-        const user = await userModal.findById(userId);
+        const user = await authModal.findById(userId);
         if (!user) {
             return {
                 statusCode: 404,
@@ -73,12 +74,32 @@ const getUserbyId = async (userId) => {
     }
 }
 
+// get all users
+const getAllUsers = () => {
+    return authModal.find({}).select("-password")//not to show passw 
+        .then((users) => {
+            return {
+                statusCode: 200,
+                message: "Users retrieved successfully",
+                data: users,
+            };
+        })
+        .catch((error) => {
+            return {
+                statusCode: 500,
+                message: "Internal Server Error",
+                error: error.message,
+            };
+        });
+};
+
+
 // UPDATE USER
 
 const updateUser = async (userId, body) => {
     const { username, password, isEmailverified } = body;
     try {
-        const updatedUser = await userModal.findByIdAndUpdate(userId, {
+        const updatedUser = await authModal.findByIdAndUpdate(userId, {
             username: username,
             password: hashedPassword,
             // isEmailverified:isEmailverified,
@@ -113,7 +134,7 @@ const updateUser = async (userId, body) => {
 // delete user
 const userDelete=async(userId)=>{
     try{
-        const deletedUser=await userModal.findByIdAndDelete(userId);
+        const deletedUser=await authModal.findByIdAndDelete(userId);
         if (!deletedUser) {
             return{
                 statusCode:404,
@@ -166,4 +187,4 @@ const bodyRequiredDataValidator = (body, fields) => {
     return required.length ? { "missing": required } : undefined
 }
 //------------------------------------------------------------------------------
-module.exports = { registerUser,updateUser ,getUserbyId,userDelete}
+module.exports = { getAllUsers,registerUser,updateUser ,getUserbyId,userDelete}

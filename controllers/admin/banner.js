@@ -1,47 +1,42 @@
 const Banner = require("../../models/bannerModel");
 const bannerModal = require("../../models/bannerModel")
+const { validationResult } = require("express-validator")
+const cloudinary = require("../../services/cloudinary")
+
 // app.use(express.json());
 
 // create banner
-const createBanner = async (bannerData) => {
-    const required = ["bannerTitle", "bannerImage", "description"]
-    const validationError = bodyRequiredDataValidator(bannerData, required);
-    if (validationError) {
-        return {
-            statusCode: 400,
-            error: validationError,
+const createBanner = async (req, res, next) => {
+    try {
+        const errors = validationResult(req)
+        // console.log(errors);
+        if (!errors.isEmpty()) {
+
+            throw new Error("Bad input string", errors)
         }
-    }
-    return bannerModal.findOne({ bannerId: bannerData.bannerId })
-        .then((banner) => {
-            // if (banner) {
-            //     return {
-            //         statusCode: 401,
-            //         message: "Banner with the same ID already exists",
-            //         data: banner,
-            //     };
-            // } else {
-            const newBanner = new bannerModal({
-                bannerId: bannerData.bannerId,
-                bannerImage: bannerData.bannerImage,
-                description: bannerData.description,
-                bannerTitle: bannerData.bannerTitle,
+        // console.log(req.body);
+        // console.log(req.file);
+        if (!req.file) {
+            throw new Error("no file found")
 
-            });
-            newBanner.save();
-            return {
-                statusCode: 200,
-                message: "Banner created successfully",
-            };
+        }
+        const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+        const newBanner = new bannerModal({
+            bannerImage: upload.secure_url,
+            description: req.body.description,
+            bannerTitle: req.body.bannerTitle,
 
-        })
-        .catch((error) => {
-            return {
-                statusCode: 500,
-                message: "Internal Server Error",
-                error: error.message,
-            };
         });
+        newBanner.save();
+        console.log("banner created successfully", upload);
+        res.status(200).json({
+            message: "Banner Created successfully"
+        })
+        next();
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
 };
 
 // GET all banners
@@ -90,44 +85,50 @@ const getBannerById = (bannerId) => {
 };
 
 // UPDATE banner
-const updateBanner = (bannerId, updatedBannerData) => {
-    const required = ["bannerTitle", "bannerImage", "description"]
-    const validationError = bodyRequiredDataValidator(updatedBannerData, required);
-    if (validationError) {
-        return {
-            statusCode: 400,
-            error: validationError,
+const updateBanner = async (req, res, next) => {
+    try {
+        console.log("new errorrrrrr",req.body);
+        const bannerId = req.params.id
+        
+        const {bannerTitle,description}=req.body;
+        
+        const banner=Banner.findById(bannerId)
+        if(!banner){
+            throw new Error("Banner does not exist");
         }
-    }
-    return bannerModal.findByIdAndUpdate(
-        bannerId,
-        {
-            bannerImage: updatedBannerData.bannerImage,
-            description: updatedBannerData.description,
-            bannerTitle: updatedBannerData.bannerTitle,
-        },
-        { new: true }
-    )
-        .then((banner) => {
-            if (!banner) {
-                return {
-                    statusCode: 404,
-                    message: "Banner not found",
-                };
-            }
-            return {
-                statusCode: 200,
-                message: "Banner updated successfully",
-                data: banner,
-            };
+        let uploadimg
+        if (req.file) {
+
+            uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+
+        }
+        const bannerImage=uploadimg?uploadimg.secure_url:banner.bannerImage
+        console.log(bannerImage);
+        console.log(description);
+        console.log(bannerTitle);
+        const updatedData = await bannerModal.findByIdAndUpdate(
+            bannerId,
+            {
+                $set:{
+                    bannerImage,
+                    description,
+                    bannerTitle,
+                },
+            },
+            { new: true }
+        )
+        console.log("banner Updated Successfully",);
+        res.status(200).json({
+            message: "Banner Updated successfully"
+
         })
-        .catch((error) => {
-            return {
-                statusCode: 500,
-                message: "Internal Server Error",
-                error: error.message,
-            };
-        });
+        console.log(updatedData);
+
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+
 };
 
 
@@ -163,13 +164,13 @@ const deleteBanner = (bannerId) => {
 const bodyRequiredDataValidator = (body, fields) => {
     let required = []
     fields.forEach((key) => {
-      if ([undefined, '', null].includes(body[key])) {
-        required.push(key)
-      }
+        if ([undefined, '', null].includes(body[key])) {
+            required.push(key)
+        }
     })
     return required.length ? { "missing": required } : undefined
-  }
-  //------------------------------------------------------------------------------ 
+}
+//------------------------------------------------------------------------------ 
 
 
 // _____________________________________________________________________
@@ -180,3 +181,17 @@ module.exports = {
     updateBanner,
     deleteBanner
 };
+
+
+
+
+// ------------------------------------------------------------------------------
+// const required = ["bannerTitle", "bannerImage", "description"]
+// const validationError = bodyRequiredDataValidator(updatedBannerData, required);
+// if (validationError) {
+//     return {
+//         statusCode: 400,
+//         error: validationError,
+//     }
+// }
+// ------------------------------------------------------------------------------
