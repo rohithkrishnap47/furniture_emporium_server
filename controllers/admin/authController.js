@@ -1,78 +1,86 @@
 const authmodel = require('../../models/authModal');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
+// const { cookie } = require('express-validator');
 
-const loginUser = async (body) => {
-    const { emailaddress, password } = body;
+
+const loginUser = async (req, res) => {
+    
     try {
+        const { emailaddress, password } = req.body;
         const user = await authmodel.findOne({ emailaddress });
-
-
         if (!user) {
-            return {
-                statusCode: 401,
-                message: "User not found"
-            };
+            return res.status(401).json({ message: "User not found" });
         }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
 
         if (!isPasswordMatch) {
-            return {
-                statusCode: 401,
-                message: "Invalid credentials"
-            };
+            return res.status(401).json({ message: "Invalid credentials" });
         }
-        const token = jwt.sign({ userId: user._id }, 'wwwwwwww', { expiresIn: '24h' });
 
-        return {
-            statusCode: 200,
-            message: "Login successful",
-            token: token
-        };
+        // Create a JWT token
+        const token = jwt.sign({ userId: user._id }, 'newtoken ', { expiresIn: '1h' });
+        const userInfo = {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            emailaddress: user.emailaddress
 
+        }
+        return res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'None',
+        }).status(200).json({ message: "Login successful", token,userInfo, statusCode:200});
     } catch (error) {
         console.error(error);
-        return {
-            statusCode: 500,
-            message: "Internal server error"
-        };
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
 
-const registerUser = async (body) => {
-    const { emailaddress, password, firstname, lastname } = body;
-    if (!emailaddress || !password || !firstname || !lastname) {
-        return {
-            statusCode: 400,
-            message: "feilds missing"
-        };
-    }
-    const existingUser = await authmodel.findOne({ emailaddress });
-    if (existingUser) {
-        return {
-            statusCode: 400,//400 something???
-            message: "user already exists"
-        };
-
-    }
-    const newUser=new authmodel({
-        emailaddress,
-        password:await bcrypt.hash(password,10),
-        firstname,
-        lastname
-    });
-    await newUser.save();
-    const token = jwt.sign({ userId: newUser._id }, 'yourSecretKey', { expiresIn: '24h' });
-    
-    return{
-        statusCode:201,
-        message:"user created successfully",
-        // token
-        data:{
-            token:token
+const registerUser = async (req,res) => {
+    try {
+        const { emailaddress, password, firstname, lastname } = req.body;
+        if (!emailaddress || !password || !firstname || !lastname) {
+            return {
+                statusCode: 400,
+                message: "feilds missing"
+            };
         }
+        const existingUser = await authmodel.findOne({ emailaddress });
+        if (existingUser) {
+            return {
+                statusCode: 400,//400 something???
+                message: "user already exists"
+            };
+    
+        }
+        const newUser=new authmodel({
+            emailaddress,
+            password:await bcrypt.hash(password,10),
+            firstname,
+            lastname
+        });
+        await newUser.save();
+        const token = jwt.sign({ userId: newUser._id }, 'yourSecretKey', { expiresIn: '24h' });
+        // console.log(token);
+        return res.status(201).json({message:"user created successfully",statusCode:201})        
+    } catch (error) {
+        console.log(error);
+        console.error(error);
     }
 }
 
 
 module.exports ={ loginUser,registerUser};
+
+
+
+// ===============================================================DUMP
+
+
+        // Set the token as an HTTP-only cookie
+        // res.cookie('token', token, {
+        //     httpOnly: true,
+        //     // secure: process.env.NODE_ENV === 'production', /
+        //     // maxAge: 3600000 
+        // });
+        // console.log("cookie",cookie);

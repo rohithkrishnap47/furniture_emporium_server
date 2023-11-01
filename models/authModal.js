@@ -14,7 +14,8 @@ const authSchema = new Schema({
         type: String
     },
     password: {
-        type: String
+        type: String,
+        required: true
     },
     createdAt: {
         type: Date
