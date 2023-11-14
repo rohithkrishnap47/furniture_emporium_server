@@ -1,6 +1,9 @@
 const authmodel = require('../../models/authModal');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
+const generateOTP=require('../../utils/generateOTP')
+const nodemailer = require('../../utils/mailer');
+
 // const { cookie } = require('express-validator');
 
 
@@ -67,8 +70,37 @@ const registerUser = async (req,res) => {
     }
 }
 
+const forgotpassword=async(req,res)=>{
+    try {
+        const emailaddress=req.body.email
+        const checkuser = await authmodel.findOne({ emailaddress });
+        if (!checkuser) {
+            return res.status(400).json ({
+                statusCode: 400,
+                message: "NO USER FOUND WITH THIS MAIL ID"
+            });
+        }
+        const OTP=generateOTP.generateOTP()
+        let data={
+            otp:OTP,
+            otp_expiry:new Date
+        };
 
-module.exports ={ loginUser,registerUser};
+
+        authmodel.findByIdAndUpdate(checkuser._id, data);
+        nodemailer.sentOTP(emailaddress,OTP)
+        return res.status(200).json ({
+            statusCode: 400,
+            message: "Please Check your mail"
+        });
+
+    } catch (error) {
+        
+    }
+}
+
+
+module.exports ={ loginUser,registerUser,forgotpassword};
 
 
 

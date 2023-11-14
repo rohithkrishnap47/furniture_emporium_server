@@ -6,15 +6,7 @@ router.post("/login", authController.loginUser)
 
 router.post("/register", authController.registerUser);
 
+router.post("/forgotpassword",authController.forgotpassword)
+
 module.exports = router 
 
-// (req.body); 
-//         res.status(result.statusCode).json(result); 
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({
-//             statusCode: 500,
-//             message: "Internal Server Error"
-//         });
-//     }
-// }

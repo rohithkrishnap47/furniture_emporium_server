@@ -23,6 +23,12 @@ const authSchema = new Schema({
     updatedAt: {
         type: Date
     },
+    otp: {
+        type: String
+    },
+    otp_expiry: {
+        type: Date,
+    }
 })
 const Auth = mongoose.model("Auth", authSchema);
 module.exports = Auth
