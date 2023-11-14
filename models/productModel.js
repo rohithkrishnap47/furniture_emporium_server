@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema({
     },
     warranty: {
         type: String,
-        required: true
+        // required: true
     },
     price: {
         type: Number,

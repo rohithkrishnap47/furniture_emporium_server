@@ -3,17 +3,18 @@ const router = express.Router();
 const productController = require('../controllers/admin/product');
 const uploader = require("../services/multer")
 const cloudinary = require("../services/cloudinary")
-
+const {check}=require("express-validator")
+const productCreateValidator = [
+    check("name").notEmpty(),
+    check("category").notEmpty(),
+    check("warranty").notEmpty(),
+    check("price").notEmpty(),
+    check("discount").notEmpty(),
+    check("stock").notEmpty(),
+]
 // Create a new product
 
-router.post('/createProducts',async (req, res) => {
-    try {
-        const result = await productController.createProduct(req.body);
-        res.status(result.statusCode).json(result);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+router.post('/createProducts',uploader.single("file"), productCreateValidator,productController.createProduct);
 
 // Update a product by ID
 router.put('/UpdateProducts', async (req, res) => {

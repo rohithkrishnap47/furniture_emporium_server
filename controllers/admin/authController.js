@@ -40,17 +40,17 @@ const registerUser = async (req,res) => {
     try {
         const { emailaddress, password, firstname, lastname } = req.body;
         if (!emailaddress || !password || !firstname || !lastname) {
-            return {
+            return res.status(400).json ({
                 statusCode: 400,
                 message: "feilds missing"
-            };
+            });
         }
         const existingUser = await authmodel.findOne({ emailaddress });
         if (existingUser) {
-            return {
-                statusCode: 400,//400 something???
+            return res.status(400).json ({
+                statusCode: 400,
                 message: "user already exists"
-            };
+            });
     
         }
         const newUser=new authmodel({
@@ -60,8 +60,6 @@ const registerUser = async (req,res) => {
             lastname
         });
         await newUser.save();
-        const token = jwt.sign({ userId: newUser._id }, 'yourSecretKey', { expiresIn: '24h' });
-        // console.log(token);
         return res.status(201).json({message:"user created successfully",statusCode:201})        
     } catch (error) {
         console.log(error);

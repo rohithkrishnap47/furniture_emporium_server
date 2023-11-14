@@ -5,41 +5,40 @@ const cloudinary = require("../../services/cloudinary")
 
 // app.use(express.json());
 
-// create banner
-const createBanner = async (req, res, next) => {
+// create banner ------------------------------------------------------------------------
+const createBanner = async (req, res) => {
     try {
         const errors = validationResult(req)
-        // console.log(errors);
         if (!errors.isEmpty()) {
 
             throw new Error("Bad input string", errors)
         }
-        // console.log(req.body);
-        // console.log(req.file);
         if (!req.file) {
             throw new Error("no file found")
-
         }
         const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+        console.log(req.body);
         const newBanner = new bannerModal({
             bannerImage: upload.secure_url,
             description: req.body.description,
             bannerTitle: req.body.bannerTitle,
-
+            relatedItemId: req.body.relatedItemId,
+            clickType: req.body.clickType,
         });
+
         newBanner.save();
         console.log("banner created successfully", upload);
         res.status(200).json({
             message: "Banner Created successfully"
         })
-        next();
+       
     } catch (error) {
         console.error(error);
-        next(error);
+      
     }
 };
 
-// GET all banners
+// GET all banners----------------------------------------------------------------------
 
 const getAllBanners = () => {
     return bannerModal.find({})
@@ -59,7 +58,7 @@ const getAllBanners = () => {
         });
 };
 
-// GET Banner by Id
+// GET Banner by Id---------------------------------------------------------------------
 const getBannerById = (bannerId) => {
     return bannerModal.findById(bannerId)
         .then((banner) => {
@@ -84,13 +83,14 @@ const getBannerById = (bannerId) => {
         });
 };
 
-// UPDATE banner
+// UPDATE banner----------------------------------------------------------------------------------------
 const updateBanner = async (req, res, next) => {
     try {
         console.log("new errorrrrrr",req.body);
         const bannerId = req.params.id
         
-        const {bannerTitle,description}=req.body;
+        // const {bannerTitle,description}=req.body; //old one
+        const {bannerTitle,description,relatedItemId,clickType}=req.body;
         
         const banner=Banner.findById(bannerId)
         if(!banner){
@@ -101,6 +101,7 @@ const updateBanner = async (req, res, next) => {
 
             uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
 
+            console.log(uploadimg);
         }
         const bannerImage=uploadimg?uploadimg.secure_url:banner.bannerImage
         console.log(bannerImage);
@@ -113,6 +114,8 @@ const updateBanner = async (req, res, next) => {
                     bannerImage,
                     description,
                     bannerTitle,
+                    relatedItemId,
+                    clickType
                 },
             },
             { new: true }

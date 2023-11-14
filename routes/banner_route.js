@@ -9,6 +9,8 @@ const bannerValidator = [
     // body("bannerImage").notEmpty(),
     check("description").notEmpty(),
     check("bannerTitle").notEmpty(),
+    check("relatedItemId").notEmpty(),
+    check("clickType").notEmpty(),
 ]
 
 

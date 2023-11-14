@@ -1,49 +1,74 @@
 
 // REQUIRE from database
+const { validationResult } = require("express-validator");
 const Product = require("../../models/productModel");
+const cloudinary = require("../../services/cloudinary")
 //------------------------------------------------------------------------------ 
 // PRODUCTS
 
 // ADD_product
-const createProduct = (productData) => {
-  const required = ["name", "category", "warranty","price","discount"]
-  const validationError = bodyRequiredDataValidator(productData, required);
-  if (validationError) {
-    return {
-      statusCode: 400,
-      error: validationError,
-    }
-  }
-  return Product.findOne({ name: productData.name })
-    .then((product) => {
-      if (product) {
-        return {
-          statusCode: 401,
-          message: "Product EXISTS",
-          data: product,
-        };
+const createProduct = async (req, res) => {
+  try {
+      const productData = req.body;
+      const errors = validationResult(req);
+      
+      if (!errors.isEmpty()) {
+          return res.status(400).json({
+              statusCode: 400,
+              message: "Bad input string",
+              errors: errors.array(),
+          });
       }
-      else {
-        const newProduct = new Product({
+
+      const product = await Product.findOne({ name: productData.name });
+
+      if (product) {
+          return res.status(401).json({
+              statusCode: 401,
+              message: "Product already exists",
+              data: product,
+          });
+      }
+
+      if (!req.file) {
+          return res.status(400).json({
+              statusCode: 400,
+              message: "No file found",
+          });
+      }
+
+      const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+
+      const newProduct = new Product({
           name: productData.name,
           category: productData.category,
           type: productData.type,
-          images: productData.images,
-          description: productData.description,
+          images: upload.secure_url,
           warranty: productData.warranty,
           price: productData.price,
           discount: productData.discount,
           stock: productData.stock,
-          selling_price: productData.selling_price
-        })
-        newProduct.save()
-        return {
-          statusCode: 200,
-          message: "product created"
-        }
-      }
-    });
+      });
+
+      await newProduct.save();
+
+      res.status(201).json({
+          statusCode: 201,
+          message: "Product created successfully",
+          data: newProduct,
+      });
+
+  } catch (error) {
+      console.error("Server error:", error);
+      res.status(500).json({
+          statusCode: 500,
+          message: "Internal server error",
+      });
+  }
 };
+
+module.exports = createProduct;
+
 
 
 // GET_ALL_PRODUCTS
