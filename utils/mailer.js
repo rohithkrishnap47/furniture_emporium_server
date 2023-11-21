@@ -1,5 +1,4 @@
 const nodemailer=require("nodemailer")
-const adminModal = require("../../models/adminModel");
 
 
 const transporter = nodemailer.createTransport({

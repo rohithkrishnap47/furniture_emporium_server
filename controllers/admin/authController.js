@@ -74,6 +74,8 @@ const forgotpassword=async(req,res)=>{
     try {
         const emailaddress=req.body.email
         const checkuser = await authmodel.findOne({ emailaddress });
+        console.log("checkuser",checkuser);
+        
         if (!checkuser) {
             return res.status(400).json ({
                 statusCode: 400,
@@ -83,15 +85,16 @@ const forgotpassword=async(req,res)=>{
         const OTP=generateOTP.generateOTP()
         let data={
             otp:OTP,
-            otp_expiry:new Date
+            // otp_expiry:new Date
         };
 
-
-        authmodel.findByIdAndUpdate(checkuser._id, data);
+        
+        const auth =authmodel.findByIdAndUpdate(checkuser._id, data);
         nodemailer.sentOTP(emailaddress,OTP)
         return res.status(200).json ({
             statusCode: 400,
-            message: "Please Check your mail"
+            message: "Please Check your mail",auth
+            
         });
 
     } catch (error) {
@@ -99,18 +102,53 @@ const forgotpassword=async(req,res)=>{
     }
 }
 
+const otpverification= async (req, res) => {
+    try {
+        const emailaddress = req.body.userEmail;
+        const otp = req.body.otp;
 
-module.exports ={ loginUser,registerUser,forgotpassword};
+        const user = await authmodel.findOne({ emailaddress}); 
 
+        if (!user) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: "Invalid email address"
+            });
+        }
+        if (user.otp==otp) {
+            return res.status(200).json({
+                statusCode:200,
+                message:"OTP verified"
+            })
+        }
+        else{
+            return res.status(400).json({
+                statusCode:200,
+                message:"enter valid otp"
+            })
+        }
+    }
+    catch(error){
+        console.log(error);
+    }
+}
 
+const resetPassword = async (req, res) => {
+    try {
+        const emailaddress = req.body.email;
 
-// ===============================================================DUMP
+        const user = await authmodel.findOne({ emailaddress}); 
 
+        if (!user) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: "Invalid email address"
+            });
+        }
+    }
+    catch{
 
-        // Set the token as an HTTP-only cookie
-        // res.cookie('token', token, {
-        //     httpOnly: true,
-        //     // secure: process.env.NODE_ENV === 'production', /
-        //     // maxAge: 3600000 
-        // });
-        // console.log("cookie",cookie);
+    }
+}
+
+module.exports ={ loginUser,registerUser,forgotpassword,resetPassword,otpverification};

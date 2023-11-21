@@ -31,10 +31,10 @@ const createBanner = async (req, res) => {
         res.status(200).json({
             message: "Banner Created successfully"
         })
-       
+
     } catch (error) {
         console.error(error);
-      
+
     }
 };
 
@@ -86,14 +86,11 @@ const getBannerById = (bannerId) => {
 // UPDATE banner----------------------------------------------------------------------------------------
 const updateBanner = async (req, res, next) => {
     try {
-        console.log("new errorrrrrr",req.body);
+        console.log("req body", req.body);
         const bannerId = req.params.id
-        
-        // const {bannerTitle,description}=req.body; //old one
-        const {bannerTitle,description,relatedItemId,clickType}=req.body;
-        
-        const banner=Banner.findById(bannerId)
-        if(!banner){
+        const { bannerTitle, description, relatedItemId, clickType } = req.body;
+        const banner = Banner.findById(bannerId)
+        if (!banner) {
             throw new Error("Banner does not exist");
         }
         let uploadimg
@@ -101,16 +98,16 @@ const updateBanner = async (req, res, next) => {
 
             uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
 
-            console.log(uploadimg);
+            console.log("uploadimg",uploadimg);
         }
-        const bannerImage=uploadimg?uploadimg.secure_url:banner.bannerImage
+        const bannerImage = uploadimg ? uploadimg.secure_url : banner.bannerImage
         console.log(bannerImage);
         console.log(description);
         console.log(bannerTitle);
         const updatedData = await bannerModal.findByIdAndUpdate(
             bannerId,
             {
-                $set:{
+                $set: {
                     bannerImage,
                     description,
                     bannerTitle,
@@ -129,7 +126,7 @@ const updateBanner = async (req, res, next) => {
 
     } catch (error) {
         console.error(error);
-        next(error);
+       
     }
 
 };

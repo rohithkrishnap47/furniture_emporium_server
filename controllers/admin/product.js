@@ -119,19 +119,48 @@ const getProductById = (productId) => {
 
 //   UPDATE_PRODUCT
 
-const updateProduct = (productId, updatedProductData) => {
-  const required = ["name", "category", "warranty","price","discount"]
-  const validationError = bodyRequiredDataValidator(body, required);
-  if (validationError) {
-    return {
-      statusCode: 400,
-      error: validationError,
+const updateProduct = async (req,res) => {
+  // (productId, updatedProductData)
+  try {
+    console.log(req.params.id);
+    const product = await Product.findByIdAndUpdate(req.params.id);
+    if (product) {
+      console.log("product",);
+      return res.status(200).json({
+        statusCode: 200,
+        message: "product found",
+    });
     }
+    
+    else{
+      return res.status(400).json({
+        statusCode: 400,
+        message: "Product not found",
+    });
+    }
+
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({
+        statusCode: 500,
+        message: "Internal server error",
+    });
   }
+
+  const required = ["name", "category", "warranty","price","discount"]
+  // const validationError = bodyRequiredDataValidator(body, required);
+  console.log("productId",productId);
+  console.log("updatedProductData",updatedProductData);
+  // if (validationError) {
+  //   return {
+  //     statusCode: 400,
+  //     error: validationError,
+  //   }
+  // }
   return Product.findByIdAndUpdate(
     productId,
     updatedProductData,
-    { new: true }
+    // { new: true }
   )
     .then((product) => {
       if (!product) {

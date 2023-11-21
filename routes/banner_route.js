@@ -19,7 +19,7 @@ router.post("/createbanner", uploader.single("file"),bannerValidator, bannerCont
 
 
 // Update Banner
-router.put("/updateBanner/:id", bannerController.updateBanner);
+router.put("/updateBanner/:id", uploader.single("file"), bannerController.updateBanner);
 
 
 // Get Banner by ID

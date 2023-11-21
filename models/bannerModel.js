@@ -23,7 +23,8 @@ const bannerSchema = new Schema({
         required: true,
       },
       relatedItemId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
+        // type: mongoose.Schema.Types.ObjectId,
         refPath: "clickType", // Dynamic reference to 'Product' or 'Category' model
         required: true,
       },

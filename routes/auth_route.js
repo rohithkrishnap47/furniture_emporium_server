@@ -8,5 +8,9 @@ router.post("/register", authController.registerUser);
 
 router.post("/forgotpassword",authController.forgotpassword)
 
+router.post("/resetpassword",authController.resetPassword)
+
+router.post("/otpverification",authController.otpverification)
+
 module.exports = router 
 

@@ -17,17 +17,8 @@ const productCreateValidator = [
 router.post('/createProducts',uploader.single("file"), productCreateValidator,productController.createProduct);
 
 // Update a product by ID
-router.put('/UpdateProducts', async (req, res) => {
-    const productId = req.body.id;
-    const updatedProductData = req.body;
-
-    try {
-        const result = await productController.updateProduct(productId, updatedProductData);
-        res.status(result.statusCode).json(result);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+router.put('/UpdateProducts/:id',uploader.single("file"), productController.updateProduct);
+// router.put('/UpdateProducts/:id', (req, res) => productController.updateProduct(req,res))
 
 // Get a product by ID
 router.get('/products/:id', async (req, res) => {
