@@ -15,7 +15,7 @@ const bannerValidator = [
 
 
 // Create Banner
-router.post("/createbanner", uploader.array("file",3),bannerValidator, bannerController.createBanner);
+router.post("/createbanner", uploader.single("file"),bannerValidator, bannerController.createBanner);
 
 
 // Update Banner

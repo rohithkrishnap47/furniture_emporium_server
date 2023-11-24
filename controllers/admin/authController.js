@@ -1,14 +1,14 @@
 const authmodel = require('../../models/authModal');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
-const generateOTP=require('../../utils/generateOTP')
+const generateOTP = require('../../utils/generateOTP')
 const nodemailer = require('../../utils/mailer');
 
 // const { cookie } = require('express-validator');
 
 
 const loginUser = async (req, res) => {
-    
+
     try {
         const { emailaddress, password } = req.body;
         const user = await authmodel.findOne({ emailaddress });
@@ -32,82 +32,83 @@ const loginUser = async (req, res) => {
         return res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'None',
-        }).status(200).json({ message: "Login successful", token,userInfo, statusCode:200});
+        }).status(200).json({ message: "Login successful", token, userInfo, statusCode: 200 });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
 
-const registerUser = async (req,res) => {
+const registerUser = async (req, res) => {
     try {
         const { emailaddress, password, firstname, lastname } = req.body;
         if (!emailaddress || !password || !firstname || !lastname) {
-            return res.status(400).json ({
+            return res.status(400).json({
                 statusCode: 400,
                 message: "feilds missing"
             });
         }
         const existingUser = await authmodel.findOne({ emailaddress });
         if (existingUser) {
-            return res.status(400).json ({
+            return res.status(400).json({
                 statusCode: 400,
                 message: "user already exists"
             });
-    
+
         }
-        const newUser=new authmodel({
+        const newUser = new authmodel({
             emailaddress,
-            password:await bcrypt.hash(password,10),
+            password: await bcrypt.hash(password, 10),
             firstname,
             lastname
         });
         await newUser.save();
-        return res.status(201).json({message:"user created successfully",statusCode:201})        
+        return res.status(201).json({ message: "user created successfully", statusCode: 201 })
     } catch (error) {
         console.log(error);
         console.error(error);
     }
 }
 
-const forgotpassword=async(req,res)=>{
+const forgotpassword = async (req, res) => {
     try {
-        const emailaddress=req.body.email
+        const emailaddress = req.body.email
         const checkuser = await authmodel.findOne({ emailaddress });
-        console.log("checkuser",checkuser);
-        
+        console.log("checkuser", checkuser);
+
         if (!checkuser) {
-            return res.status(400).json ({
+            return res.status(400).json({
                 statusCode: 400,
                 message: "NO USER FOUND WITH THIS MAIL ID"
             });
         }
-        const OTP=generateOTP.generateOTP()
-        let data={
-            otp:OTP,
-            // otp_expiry:new Date
-        };
-
-        
-        const auth =authmodel.findByIdAndUpdate(checkuser._id, data);
-        nodemailer.sentOTP(emailaddress,OTP)
-        return res.status(200).json ({
+        const OTP = generateOTP.generateOTP()
+        await authmodel.findOneAndUpdate(
+            { emailaddress },
+            { $set: { otp: OTP } },
+            { new: true }
+        );
+        nodemailer.sentOTP(emailaddress, OTP)
+        return res.status(200).json({
             statusCode: 400,
-            message: "Please Check your mail",auth
-            
+            message: "Please Check your mail"
+
         });
 
     } catch (error) {
-        
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
     }
 }
 
-const otpverification= async (req, res) => {
+const otpverification = async (req, res) => {
     try {
         const emailaddress = req.body.userEmail;
         const otp = req.body.otp;
 
-        const user = await authmodel.findOne({ emailaddress}); 
+        const user = await authmodel.findOne({ emailaddress });
 
         if (!user) {
             return res.status(400).json({
@@ -115,40 +116,59 @@ const otpverification= async (req, res) => {
                 message: "Invalid email address"
             });
         }
-        if (user.otp==otp) {
+        if (user.otp == otp) {
             return res.status(200).json({
-                statusCode:200,
-                message:"OTP verified"
+                statusCode: 200,
+                message: "OTP verified"
             })
         }
-        else{
+        else {
             return res.status(400).json({
-                statusCode:200,
-                message:"enter valid otp"
+                statusCode: 400,
+                message: "enter valid otp"
             })
         }
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 }
 
 const resetPassword = async (req, res) => {
     try {
-        const emailaddress = req.body.email;
-
-        const user = await authmodel.findOne({ emailaddress}); 
-
-        if (!user) {
-            return res.status(400).json({
-                statusCode: 400,
-                message: "Invalid email address"
-            });
-        }
+      const emailaddress = req.body.Email;
+      const password = req.body.password;
+  
+      const user = await authmodel.findOne({ emailaddress });
+  
+      if (!user) {
+        return res.status(400).json({
+          statusCode: 400,
+          message: "Invalid email address"
+        });
+      }
+  
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Update the user's password with the hashed password
+      await authmodel.findOneAndUpdate(
+        { emailaddress },
+        { $set: { password: hashedPassword } },
+        { new: true }
+      );
+  
+      return res.status(200).json({
+        statusCode: 200,
+        message: "Password reset successfully"
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        statusCode: 500,
+        message: "Internal Server Error"
+      });
     }
-    catch{
+  };
 
-    }
-}
-
-module.exports ={ loginUser,registerUser,forgotpassword,resetPassword,otpverification};
+module.exports = { loginUser, registerUser, forgotpassword, resetPassword, otpverification };
