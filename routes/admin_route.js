@@ -53,10 +53,4 @@ router.delete("/deleteAdmin/:id", (req, res) => {
 
 
 // --------------------------------------------------------------------------------------
-// ADMIN_ROUTE
-
-// router
-//      .route("/adminRegister/")
-//  .post(adminController.)
-
 module.exports = router 

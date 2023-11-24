@@ -119,7 +119,8 @@ const otpverification = async (req, res) => {
         if (user.otp == otp) {
             return res.status(200).json({
                 statusCode: 200,
-                message: "OTP verified"
+                message: "OTP verified",
+                email: user.emailaddress,
             })
         }
         else {
@@ -128,6 +129,7 @@ const otpverification = async (req, res) => {
                 message: "enter valid otp"
             })
         }
+        
     }
     catch (error) {
         console.log(error);
@@ -136,39 +138,39 @@ const otpverification = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     try {
-      const emailaddress = req.body.Email;
-      const password = req.body.password;
-  
-      const user = await authmodel.findOne({ emailaddress });
-  
-      if (!user) {
-        return res.status(400).json({
-          statusCode: 400,
-          message: "Invalid email address"
+        const emailaddress = req.body.Email;
+        const password = req.body.password;
+
+        const user = await authmodel.findOne({ emailaddress });
+
+        if (!user) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: "Invalid email address"
+            });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Update the user's password with the hashed password
+        await authmodel.findOneAndUpdate(
+            { emailaddress },
+            { $set: { password: hashedPassword } },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: "Password reset successfully"
         });
-      }
-  
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      // Update the user's password with the hashed password
-      await authmodel.findOneAndUpdate(
-        { emailaddress },
-        { $set: { password: hashedPassword } },
-        { new: true }
-      );
-  
-      return res.status(200).json({
-        statusCode: 200,
-        message: "Password reset successfully"
-      });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        statusCode: 500,
-        message: "Internal Server Error"
-      });
+        console.error(error);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
     }
-  };
+};
 
 module.exports = { loginUser, registerUser, forgotpassword, resetPassword, otpverification };
