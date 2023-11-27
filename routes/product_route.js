@@ -33,14 +33,7 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // Get all products
-router.get('/productsAll', async (req, res) => {
-    try {
-        const result = await productController.getAllProducts();
-        res.status(result.statusCode).json(result);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+router.get('/productsAll',productController.getAllProducts);
 
 // Delete a product by ID
 router.delete('/products/:id', async (req, res) => {

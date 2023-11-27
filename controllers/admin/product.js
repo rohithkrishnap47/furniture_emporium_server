@@ -2,7 +2,8 @@
 // REQUIRE from database
 const { validationResult } = require("express-validator");
 const Product = require("../../models/productModel");
-const cloudinary = require("../../services/cloudinary")
+const cloudinary = require("../../services/cloudinary");
+const { productService } = require("../../services");//from "index.js" services
 //------------------------------------------------------------------------------ 
 // PRODUCTS
 
@@ -71,25 +72,43 @@ module.exports = createProduct;
 
 
 
+// ----------------------------------------
 // GET_ALL_PRODUCTS
 
-const getAllProducts = () => {
-  return Product.find({})
-    .then((products) => {
-      return {
-        statusCode: 200,
-        message: "Products retrieved successfully",
-        data: products,
-      };
-    })
-    .catch((error) => {
-      return {
-        statusCode: 500,
-        message: "Internal Server Error",
-        error: error.message,
-      };
+// const getAllProducts = () => {
+// return Product.find({})
+//   .then((products) => {
+//     return {
+//       statusCode: 200,
+//       message: "Products retrieved successfully",
+//       data: products,
+//     };
+//   })
+//   .catch((error) => {
+//     return {
+//       statusCode: 500,
+//       message: "Internal Server Error",
+//       error: error.message,
+//     };
+//   });
+// };
+const getAllProducts = async (req, res) => {
+  try {
+    let name = req.query?req.query.name : ""
+    const options = { name }
+    const result = await productService.getAllproducts(options)
+    console.log("result",result);
+    return res.json({
+      statusCode: 200,
+      message: "Products retrieved successfully",
+      data: result,
     });
-};
+  } catch (error) {
+    console.log(error);
+  }
+}
+// ----------------------------------------
+
 
 // GET_SINGLE_PRODUCT
 const getProductById = (productId) => {
