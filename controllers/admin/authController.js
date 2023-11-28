@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
 const generateOTP = require('../../utils/generateOTP')
 const nodemailer = require('../../utils/mailer');
+const adminModal = require('../../models/adminModel');
 
 // const { cookie } = require('express-validator');
 
@@ -69,7 +70,7 @@ const registerUser = async (req, res) => {
         console.error(error);
     }
 }
-
+// FORGOT-PASSWORD
 const forgotpassword = async (req, res) => {
     try {
         const emailaddress = req.body.email
@@ -172,6 +173,31 @@ const resetPassword = async (req, res) => {
         });
     }
 };
+// ADMIN-LOGIN
+const loginAdmin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const admin = await adminModal.findOne({ username })
+        if (!admin) {
+            return res.status(401).json({ message: "Admin Not Found" })
+        }
+        const checkPassword = await bcrypt.compare(password, admin.password)
+        if (!checkPassword) {
+            return res.status(401).json({ message: "Wrong password" });
+        }
+        // jwt tok
+        const token = jwt.sign({ username: admin.username, role: 'admin' }, jwtSecret, { expiresIn: '1h' });
+        const adminInfo = {
+            name: admin.name,
+            username: admin.username,
+            password: admin.password,
+        }
+
+    } catch (error) {
+        console.error("Login Error:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
 
 
-module.exports = { loginUser, registerUser, forgotpassword, resetPassword, otpverification };
+module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification };
