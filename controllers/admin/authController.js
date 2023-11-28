@@ -102,7 +102,7 @@ const forgotpassword = async (req, res) => {
         });
     }
 }
-
+// OTP-VERIFICATION
 const otpverification = async (req, res) => {
     try {
         const emailaddress = req.body.userEmail;
@@ -129,13 +129,13 @@ const otpverification = async (req, res) => {
                 message: "enter valid otp"
             })
         }
-        
+
     }
     catch (error) {
         console.log(error);
     }
 }
-
+// RESET-PASSWORD
 const resetPassword = async (req, res) => {
     try {
         const emailaddress = req.body.Email;
@@ -172,5 +172,6 @@ const resetPassword = async (req, res) => {
         });
     }
 };
+
 
 module.exports = { loginUser, registerUser, forgotpassword, resetPassword, otpverification };
