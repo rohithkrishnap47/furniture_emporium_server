@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken")
 const generateOTP = require('../../utils/generateOTP')
 const nodemailer = require('../../utils/mailer');
 const adminModal = require('../../models/adminModel');
+const Cookies = require('js-cookie');
 
 // const { cookie } = require('express-validator');
 
@@ -186,12 +187,15 @@ const loginAdmin = async (req, res) => {
             return res.status(401).json({ message: "Wrong password" });
         }
         // jwt tok
+        const jwtSecret = 'key';
         const token = jwt.sign({ username: admin.username, role: 'admin' }, jwtSecret, { expiresIn: '1h' });
+        Cookies.set('token', token, { expires: 1 / 24 });
         const adminInfo = {
             name: admin.name,
             username: admin.username,
-            password: admin.password,
+
         }
+        Cookies.set('adminInfo', JSON.stringify(adminInfo), { expires: 1 / 24 });
 
     } catch (error) {
         console.error("Login Error:", error);

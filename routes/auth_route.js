@@ -12,5 +12,8 @@ router.post("/resetpassword",authController.resetPassword)
 
 router.post("/otpverification",authController.otpverification)
 
+// admin-login-route
+router.post("/login",authController.loginAdmin)
+
 module.exports = router 
 
