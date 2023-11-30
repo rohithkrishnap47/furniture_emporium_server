@@ -79,12 +79,17 @@ const getAllProducts = async (req, res) => {
     let name = req.query ? req.query.name : ""
     console.log("req.query",req.query);
     let price=parseInt(req.query.price)
+    let nameSort=parseInt(req.query.namesort)
     const options = { name }
 
     let sort = { _id: -1 }; //default sort
     if (price) {
       delete sort._id;
       sort["price"] /* model */ = price //price declared above;
+    }
+    if (nameSort) {
+      delete sort._id;
+      sort["name"] = nameSort;
     }
     const result = await productService.getAllproducts(options,sort)
     console.log("result", result);

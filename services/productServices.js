@@ -8,7 +8,7 @@ exports.getAllproducts = async (options, sort) => {
         pipeline.push({ $match: { name: { $regex: options.name, $options: "i" } } })
     }
     pipeline.push(
-        { $sort: sort/*{name:1}*/ },
+        { $sort: sort },
         {
             $project: {
                 _id: 1,
