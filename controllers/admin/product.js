@@ -74,30 +74,20 @@ module.exports = createProduct;
 
 // ----------------------------------------
 // GET_ALL_PRODUCTS
-
-// const getAllProducts = () => {
-// return Product.find({})
-//   .then((products) => {
-//     return {
-//       statusCode: 200,
-//       message: "Products retrieved successfully",
-//       data: products,
-//     };
-//   })
-//   .catch((error) => {
-//     return {
-//       statusCode: 500,
-//       message: "Internal Server Error",
-//       error: error.message,
-//     };
-//   });
-// };
 const getAllProducts = async (req, res) => {
   try {
-    let name = req.query?req.query.name : ""
+    let name = req.query ? req.query.name : ""
+    console.log("req.query",req.query);
+    let price=parseInt(req.query.price)
     const options = { name }
-    const result = await productService.getAllproducts(options)
-    console.log("result",result);
+
+    let sort = { _id: -1 }; //default sort
+    if (price) {
+      delete sort._id;
+      sort["price"] /* model */ = price //price declared above;
+    }
+    const result = await productService.getAllproducts(options,sort)
+    console.log("result", result);
     return res.json({
       statusCode: 200,
       message: "Products retrieved successfully",
@@ -225,6 +215,7 @@ const updateProduct = async (req, res) => {
 // -----------------------------------------------------
 // DELETE_PRODUCT
 const deleteProduct = (productId) => {
+  console.log("productId",productId);
   return Product.findByIdAndDelete(productId)
     .then((product) => {
       if (!product) {
