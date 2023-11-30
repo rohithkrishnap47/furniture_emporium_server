@@ -30,5 +30,15 @@ const authSchema = new Schema({
         type: Date,
     }
 })
+
+// Super-Admin-login-setup-----------------------------------------
+const superAdminSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+});
+
+
+const SuperAdmin = mongoose.model('SuperAdmin', superAdminSchema);
+// ----------------------------------------------------------------
 const Auth = mongoose.model("Auth", authSchema);
-module.exports = Auth
+module.exports = { Auth, SuperAdmin }

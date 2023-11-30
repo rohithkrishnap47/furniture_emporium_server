@@ -10,7 +10,6 @@ require('dotenv').config();
 
 app.use(express.json())
 app.use(cors({ origin: ['http://127.0.0.1:5508','http://127.0.0.1:5501'],  credentials: true, }))
-// app.use(cors())
 
 // PORT DECLARING
 const PORT = process.env.PORT || 5001;

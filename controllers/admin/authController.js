@@ -5,7 +5,7 @@ const generateOTP = require('../../utils/generateOTP')
 const nodemailer = require('../../utils/mailer');
 const adminModal = require('../../models/adminModel');
 const Cookies = require('js-cookie');
-
+const SuperAdmin = require('../../models/authModal');
 // const { cookie } = require('express-validator');
 
 
@@ -177,6 +177,7 @@ const resetPassword = async (req, res) => {
 // ADMIN-LOGIN
 const loginAdmin = async (req, res) => {
     try {
+        console.log("frtdry");
         const { username, password } = req.body;
         const admin = await adminModal.findOne({ username })
         if (!admin) {
@@ -202,6 +203,8 @@ const loginAdmin = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
+// Super-admin-register
+
 
 
 module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification };

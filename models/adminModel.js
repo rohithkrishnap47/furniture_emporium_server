@@ -23,6 +23,7 @@ const adminSchema = new Schema({
     }
 })
 
+
 const adminModal = mongoose.model("Admin", 
     adminSchema
 )
