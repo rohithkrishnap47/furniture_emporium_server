@@ -91,6 +91,18 @@ const getAllProducts = async (req, res) => {
       delete sort._id;
       sort["name"] = nameSort;
     }
+    // --
+    if (categoryName) {
+      options["category"] = categoryName;
+    }
+    if (priceFilter) {
+      options["price"] = price;
+    }
+    // FUTURE-->
+    // if (brandName) {
+    //   options["brandName"] = brandName;
+    // }
+    // --
     const result = await productService.getAllproducts(options,sort)
     console.log("result", result);
     return res.json({

@@ -18,7 +18,26 @@ exports.getAllproducts = async (options, sort) => {
                 discount: 1
             }
         },
-
+        {
+            $facet: {
+              metadata: [
+                {
+                  $group: {
+                    _id: null,
+                    total: { $sum: 1 },
+                  },
+                },
+              ],
+              data: [
+                {
+                  $skip: options.page * options.size,
+                },
+                {
+                  $limit: options.size,
+                },
+              ],
+            },
+          },
     );
     return await Product.aggregate(pipeline);
 }
