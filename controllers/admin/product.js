@@ -80,6 +80,10 @@ const getAllProducts = async (req, res) => {
     console.log("req.query",req.query);
     let price=parseInt(req.query.price)
     let nameSort=parseInt(req.query.namesort)
+    let categoryName=(req.query.cat)
+    let priceFilter=parseInt(req.query.PriceFil)
+    let minPrice=parseInt(req.query.minvalue)
+    let maxPrice=parseInt(req.query.maxvalue)
     const options = { name }
 
     let sort = { _id: -1 }; //default sort
@@ -96,7 +100,13 @@ const getAllProducts = async (req, res) => {
       options["category"] = categoryName;
     }
     if (priceFilter) {
-      options["price"] = price;
+      options["priceFilter"] = priceFilter;
+    }
+    if (minPrice) {
+      options["minPrice"] = minPrice;
+    }
+    if (maxPrice) {
+      options["maxPrice"] = maxPrice;
     }
     // FUTURE-->
     // if (brandName) {

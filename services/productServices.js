@@ -7,6 +7,30 @@ exports.getAllproducts = async (options, sort) => {
     if (options.name) {
         pipeline.push({ $match: { name: { $regex: options.name, $options: "i" } } })
     }
+    if (options.category) {
+        pipeline.push({
+            $match: {
+                category: options.category,
+            },
+        });
+    }
+    if (options.minPrice !== undefined || options.maxPrice !== undefined) {
+        let priceRangeCondition = {};
+
+        if (options.minPrice !== undefined) {
+            priceRangeCondition.$gte = options.minPrice;
+        }
+
+        if (options.maxPrice !== undefined) {
+            priceRangeCondition.$lte = options.maxPrice;
+        }
+
+        pipeline.push({
+            $match: {
+                price: priceRangeCondition,
+            },
+        });
+    }
     pipeline.push(
         { $sort: sort },
         {
@@ -18,26 +42,6 @@ exports.getAllproducts = async (options, sort) => {
                 discount: 1
             }
         },
-        {
-            $facet: {
-              metadata: [
-                {
-                  $group: {
-                    _id: null,
-                    total: { $sum: 1 },
-                  },
-                },
-              ],
-              data: [
-                {
-                  $skip: options.page * options.size,
-                },
-                {
-                  $limit: options.size,
-                },
-              ],
-            },
-          },
     );
     return await Product.aggregate(pipeline);
 }
