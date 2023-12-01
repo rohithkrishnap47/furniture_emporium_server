@@ -80,11 +80,13 @@ const getAllProducts = async (req, res) => {
     console.log("req.query",req.query);
     let price=parseInt(req.query.price)
     let nameSort=parseInt(req.query.namesort)
-    let categoryName=(req.query.cat)
+    let categoryName=(req.query?.cat ?? [])
+    let decodeCat = decodeURIComponent(categoryName)
     let priceFilter=parseInt(req.query.PriceFil)
     let minPrice=parseInt(req.query.minvalue)
     let maxPrice=parseInt(req.query.maxvalue)
     const options = { name }
+    console.log("cat",categoryName)
 
     let sort = { _id: -1 }; //default sort
     if (price) {
@@ -96,8 +98,8 @@ const getAllProducts = async (req, res) => {
       sort["name"] = nameSort;
     }
     // --
-    if (categoryName) {
-      options["category"] = categoryName;
+    if (categoryName?.length) {
+      options["category"] = (JSON.parse(decodeCat));
     }
     if (priceFilter) {
       options["priceFilter"] = priceFilter;

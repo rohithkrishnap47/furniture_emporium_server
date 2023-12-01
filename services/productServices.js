@@ -7,16 +7,16 @@ exports.getAllproducts = async (options, sort) => {
     if (options.name) {
         pipeline.push({ $match: { name: { $regex: options.name, $options: "i" } } })
     }
-    if (options.category) {
+    if (options.category?.length) {
         pipeline.push({
             $match: {
-                category: options.category,
+                category: { $in: options.category || [] }, // Use an empty array if options.category is not defined
             },
         });
     }
     if (options.minPrice !== undefined || options.maxPrice !== undefined) {
         let priceRangeCondition = {};
-
+ 
         if (options.minPrice !== undefined) {
             priceRangeCondition.$gte = options.minPrice;
         }
