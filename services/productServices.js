@@ -39,7 +39,10 @@ exports.getAllproducts = async (options, sort) => {
                 name: '$name',  // Rename 'name' to 'productName'
                 price: 1,               // Project 'price' as is
                 images: 1,
-                discount: 1
+                discount: 1,
+                category:1,
+                stock:1,
+                warranty:1
             }
         },
     );
