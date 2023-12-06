@@ -6,6 +6,8 @@ exports.getAllproducts = async (options, sort) => {
     let pipeline = []
     if (options.name) {
         pipeline.push({ $match: { name: { $regex: options.name, $options: "i" } } })
+        // pipeline.push({ $match: { name: { $regex: '^' + options.name, $options: "i" } } });   //starting with that perticular letter
+
     }
     if (options.category?.length) {
         pipeline.push({

@@ -3,7 +3,7 @@ const categoryModal = require("../../models/categoryModel");
 // CATEGORIES
 // ADD_category
 const createcategory = async (categoryData) => {
-  console.log("categdata", categoryData)
+  console.log("categdata******", categoryData)
   // validating categoryname, categoryimage, description
   // if (!categoryData.categoryName) {
   //   return {

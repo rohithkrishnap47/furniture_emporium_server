@@ -26,6 +26,30 @@ const addToCart = async (req, res) => {
 }
 
 // Show-CART
+const showCart = async (req, res) => {
+    try {
+        const userId=req.body._id
+        const user=User.findById(userId)
+        if (!user) {
+            return res.status(401).json({message:"No User Exists!!!"})            
+        }
+        const cart=Cart.findById({customer:userId}).populate("products.name")
+        if (!cart) {
+            return res.status(404).json({message:"Cart not Found"})
+        }
+        const cartProducts=cart.products.map(product=>({
+            name:product.name.name,
+            quantity:product.quantity,
+            price:product.price
+        }));
+        const response={
+            totalQuantity:cart.totalQuantity,
+            totalPrice:cart.totalPrice,
+            
+        }
+    } catch (error) {
 
+    }
+}
 
-module.exports = { addToCart }
+module.exports = { addToCart, showCart }
