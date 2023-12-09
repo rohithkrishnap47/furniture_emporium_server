@@ -1,5 +1,15 @@
-// const express =require("express")
-// const cartController=require("../controllers/admin/cart")
-// const router=express.Router()
+const express = require('express');
+const router = express.Router();
+const { addToCart, showCart, updateCart } = require('../controllers/admin/cart');
+const {verifyUser} = require('../middlewares/verifyUser'); // Your user verification middleware
 
-// router.get("")
+// ADD-TO-CART
+router.post('/addtocart', verifyUser, addToCart);
+
+// SHOW-CART
+router.get('/showcart', verifyUser, showCart);
+
+// UPDATE-CART
+router.put('/updatecart', verifyUser, updateCart);
+
+module.exports = router;
