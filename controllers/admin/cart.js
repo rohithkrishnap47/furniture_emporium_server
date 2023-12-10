@@ -53,8 +53,16 @@ const addToCart = async (req, res) => {
 
 
         if (existingProductIndex !== -1) {
-            // If the product exists, update the quantity
-            cart.products[existingProductIndex].quantity += quantity;
+            // If the product exists, update the quantity and cart total
+            cart.totalQuantity -= cart.products[existingProductIndex].quantity; // Subtract the old quantity
+            cart.totalQuantity += quantity; // Add the new quantity
+            cart.totalPrice -= cart.products[existingProductIndex].price * cart.products[existingProductIndex].quantity; // Subtract the old total price
+            cart.totalPrice += product.price * quantity; // Add the new total price
+            cart.totalDiscountprice -= product.discount * cart.products[existingProductIndex].quantity; // Subtract the old total discount
+            cart.totalDiscountprice += product.discount * quantity; // Add the new total discount
+
+            // updating quantity 
+            cart.products[existingProductIndex].quantity = quantity;
         } else {
             // If the product doesn't exist, add it to the cart
             cart.products.push({
@@ -62,12 +70,15 @@ const addToCart = async (req, res) => {
                 quantity,
                 price: product.price,
             });
+            cart.totalQuantity += quantity;
+            cart.totalPrice += product.price * quantity;
+            cart.totalDiscountprice += product.discount * quantity;
         }
+        
 
-        // Update cart totals
-        cart.totalQuantity += quantity;
-        cart.totalPrice += product.price * quantity;
-        cart.totalDiscountprice += product.discount * quantity;
+        // // Update cart totals
+        // //5 => a3 => b2 => a: 1 => a: 1,b:2 =3 : 
+    
 
         // Save the updated cart
         await cart.save();
@@ -96,9 +107,11 @@ const showCart = async (req, res) => {
             return res.status(404).json({ message: "Cart not Found" })
         }
         const cartProducts = cart.products?.map(product => ({
+            _id:product.productId._id,
             name: product.productId.name,
             quantity: product.quantity,
-            price: product.productId.price
+            price: product.productId.price,
+            images: product.productId.images
         }));
         const response = {
             totalQuantity: cart.totalQuantity,
@@ -113,7 +126,7 @@ const showCart = async (req, res) => {
     }
 }
 
-// UPDATE-CART
+// REMOVE-CART
 const removeCart = async (req, res) => {
     try {
         const { productId, quantity } = req.body;
