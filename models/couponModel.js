@@ -7,9 +7,9 @@ const couponSchema = new mongoose.Schema({
     startingDate: Date,
     endingDate: Date,
     active: {
-        type:Boolean,
-        default:true,
+        type: Boolean,
+        default: true,
     }
 })
-const couponmodal =mongoose.modal("Coupon",couponSchema)
-module.exports=couponmodal;
+const couponmodal = mongoose.modal("Coupon", couponSchema)
+module.exports = couponmodal;

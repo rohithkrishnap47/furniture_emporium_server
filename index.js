@@ -14,7 +14,7 @@ app.use(cors({ origin: ['http://127.0.0.1:5508','http://127.0.0.1:5501'],  crede
 // PORT DECLARING
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-    console.log("port is now running", PORT)
+    console.log(`port is now running`, PORT)
 })
 // database connect 
 database.connect()
