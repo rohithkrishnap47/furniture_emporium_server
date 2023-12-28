@@ -6,21 +6,39 @@ const userSchema = new Schema({
     },
     username: {
         type: String,
-        required: true,
+        // required: true,
         unique: true
     },
+    firstname:{
+        type:String,
+    },
+    lastname:{
+        type:String,
+    },
+    address:{
+        type:String,
+    },
+    country:{
+        type:String,
+    },
+    state:{
+        type:String,
+    },
+    pincode:{
+        type:String,
+    },
     password: {
-        type: String,
-        required: true,
+        type: Number,
+        // required: true,
     },
     isEmailverified: {
         type: Boolean,
-        required: true,
-        default: true
+        // required: true,
+        // default: true
     },
     userStatus: {
         type: Boolean,
-        default: true,
+        // default: true,
     },
     userToken: {
         type: String,
