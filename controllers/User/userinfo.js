@@ -1,9 +1,10 @@
 const usermodal = require("../../models/userModel")
 const authModal = require('../../models/authModal');
 
-const shipmentAddress = async (req, res) => {
+const addShipmentAddress = async (req, res) => {
     try {
-        const user=await aut
+        const user=await authModal.findOne({userid})
+
     } catch (error) {
         
     }
