@@ -3,6 +3,8 @@ const router = express.Router()
 
 // const { Router } = require("express");
 const userController=require("../controllers/admin/user")
+const userinfo = require('../controllers/User/userinfo')
+
 
 
 
@@ -32,6 +34,10 @@ router.get("/listusers", (req, res) => {
     });
 });
 
+
+// -----------------------------------------------------
+router.post("/add-address", userinfo.addShipmentAddress)
+router.post("/update-address", userinfo.updateShipmentAddress)
 
 
 
