@@ -1,4 +1,4 @@
-const userModal = require("../../models/userModel");
+const userModal = require("../../models/addressModal");
 const authModal = require("../../models/authModal");
 const bcrypt = require('bcryptjs');
 

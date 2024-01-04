@@ -1,31 +1,23 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const userSchema = new Schema({
-    userId: {
-        type: String
+const addressSchema = new Schema({
+    firstname: {
+        type: String,
     },
-    // username: {
-    //     type: String,
-    //     // required: true,
-    //     // unique: true
-    // },
-    firstname:{
-        type:String,
+    lastname: {
+        type: String,
     },
-    lastname:{
-        type:String,
+    address: {
+        type: String,
     },
-    address:{
-        type:String,
+    country: {
+        type: String,
     },
-    country:{
-        type:String,
+    state: {
+        type: String,
     },
-    state:{
-        type:String,
-    },
-    pincode:{
-        type:String,
+    pincode: {
+        type: String,
     },
     password: {
         type: Number,
@@ -48,5 +40,5 @@ const userSchema = new Schema({
         default: 0
     }
 })
-const User = mongoose.model("User", userSchema);
-module.exports = User
+const Address = mongoose.model("Address", addressSchema);
+module.exports = Address

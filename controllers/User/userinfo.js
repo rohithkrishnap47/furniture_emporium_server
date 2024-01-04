@@ -1,4 +1,4 @@
-const usermodal = require("../../models/userModel")
+const usermodal = require("../../models/addressModal")
 const authModal = require('../../models/authModal');
 
 const addShipmentAddress = async (req, res) => {
