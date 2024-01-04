@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const authSchema = new Schema({
 
-    userid: {
-        type:String
+    addressids: {
+        type:Array
     },
     firstname: {
         type: String,

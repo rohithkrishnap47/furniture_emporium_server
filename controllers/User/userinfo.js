@@ -3,11 +3,12 @@ const authModal = require('../../models/authModal');
 
 const addShipmentAddress = async (req, res) => {
     try {
+        console.log("req.user",req.user);
         const { firstname, lastname, address, country, state, pincode } = req.body;
         if (!firstname || !lastname || !address || !country || !state || !pincode)
             return res.status(400).json({
                 statusCode: 400,
-                message: "feilds missing"
+                message: "feilds missing"+ firstname+ lastname+ address+ country+ state+ pincode
             });
         const newshipmentaddress = new usermodal({
             firstname,
@@ -17,8 +18,9 @@ const addShipmentAddress = async (req, res) => {
             state,
             pincode
         });
-        await newshipmentaddress.save();
-        authModal.findByIdAndUpdate(req.user._id, { userid: newshipmentaddress._id })
+        const data = await newshipmentaddress.save();
+        console.log("newshipmentaddress",data);
+        authModal.findByIdAndUpdate(req.user._id, { userid: data._id })
         return res.status(201).json({ message: "Shipment address addedsuccessfully", statusCode: 201 })
     } catch (error) {
         console.log(error);
@@ -26,12 +28,7 @@ const addShipmentAddress = async (req, res) => {
     }
 }
 
-// const updateShipmentAddress = async(req,res)=>{
-//     const userdetails=await authModal.findOne({userid})
-//     if(!userdetails){
-//         // 
-//     }
-// }
+
 
 const updateShipmentAddress = async (req, res) => {
     try {

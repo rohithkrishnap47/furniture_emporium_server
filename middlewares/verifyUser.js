@@ -18,6 +18,7 @@ async function verifyUser(req, res, next) {
           "_id",
           { lean: true }
         );
+        console.log(user);
         if (user) {
           req.user = user;
           return next();

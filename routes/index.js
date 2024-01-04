@@ -9,5 +9,6 @@ module.exports=(app)=>{
     app.use("/banner",require("./banner_route")),
     app.use("/auth",require("./auth_route")),
     app.use("/user",require("./user_route"))
+    
 }
 // module.exports=router

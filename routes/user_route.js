@@ -1,9 +1,9 @@
-const express=require("express")
+const express = require("express")
 const router = express.Router()
-
 // const { Router } = require("express");
-const userController=require("../controllers/admin/user")
+const userController = require("../controllers/admin/user")
 const userinfo = require('../controllers/User/userinfo')
+const { verifyUser } = require('../middlewares/verifyUser'); // Your user verification middleware
 
 
 
@@ -36,9 +36,11 @@ router.get("/listusers", (req, res) => {
 
 
 // -----------------------------------------------------
-router.post("/add-address", userinfo.addShipmentAddress)
-router.post("/update-address", userinfo.updateShipmentAddress)
+// ADD-SHIPMENT-ADDRESS
+router.post("/add-address", verifyUser, userinfo.addShipmentAddress)
+// UPDATE-SHIPMENT-ADDRESS
+router.post("/update-address", verifyUser, userinfo.updateShipmentAddress)
 
 
 
-module.exports=router
+module.exports = router
