@@ -72,7 +72,7 @@ const registerUser = async (req, res) => {
     }
 }
 
-// GET-USER
+// GET-USER-(newly done)
 const getUserById = async (req, res) => {
     try {
         const userId = req.params.userId;

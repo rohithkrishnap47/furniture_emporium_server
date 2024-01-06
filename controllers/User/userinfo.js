@@ -1,6 +1,7 @@
 const addressModal = require("../../models/addressModal")
 const authModal = require('../../models/authModal');
 
+// ADD-SHIPMENT-ADDRESS
 const addShipmentAddress = async (req, res) => {
     try {
         console.log("req.user", req.user);
@@ -31,8 +32,48 @@ const addShipmentAddress = async (req, res) => {
     }
 }
 
+// const { ObjectId } = require('mongoose').Types;
+// GET-ADDRESS-By-ID
+const getAddressById = async (req, res) => {
+    try {
+        const addressId = req.params.addressId;
+
+        // Check if addressId is provided and is a valid ObjectId
+        if (!addressId || !ObjectId.isValid(addressId)) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: "Valid Address ID is required."
+            });
+        }
+
+        // Find the address by ID
+        const address = await addressModal.findById(addressId);
+
+        // Check if the address exists
+        if (!address) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: "Address not found."
+            });
+        }
+
+        return res.status(200).json({
+            message: "Address retrieved successfully",
+            statusCode: 200,
+            address: address
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
+    }
+};
 
 
+
+// UPDATE-SHIPMENT-ADDRESS
 const updateShipmentAddress = async (req, res) => {
     try {
         const { userid } = req.body;
@@ -82,5 +123,6 @@ const updateShipmentAddress = async (req, res) => {
 
 module.exports = {
     addShipmentAddress,
-    updateShipmentAddress
+    updateShipmentAddress,
+    getAddressById
 }
