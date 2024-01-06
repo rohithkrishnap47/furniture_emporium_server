@@ -73,6 +73,22 @@ const registerUser = async (req, res) => {
 }
 
 // GET-USER
+const getUserById = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await authmodel.findOne({ userId });
+
+        if (!user) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: "User not found"
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error", statusCode: 500 });
+    }
+}
 
 // FORGOT-PASSWORD
 const forgotpassword = async (req, res) => {
@@ -206,8 +222,8 @@ const loginAdmin = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
-                 
 
 
 
-module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification };
+
+module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification, getUserById };
