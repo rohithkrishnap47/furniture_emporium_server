@@ -71,6 +71,9 @@ const registerUser = async (req, res) => {
         console.error(error);
     }
 }
+
+// GET-USER
+
 // FORGOT-PASSWORD
 const forgotpassword = async (req, res) => {
     try {
@@ -203,7 +206,7 @@ const loginAdmin = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
-// Super-admin-register
+                 
 
 
 

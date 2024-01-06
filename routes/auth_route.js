@@ -12,6 +12,8 @@ router.post("/resetpassword",authController.resetPassword)
 
 router.post("/otpverification",authController.otpverification)
 
+router.get("/getuserbyid",)
+
 // admin-login-route
 router.post("/adminlogin",authController.loginAdmin)
 
