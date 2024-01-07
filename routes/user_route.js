@@ -41,7 +41,7 @@ router.post("/add-address", verifyUser, userinfo.addShipmentAddress)
 // UPDATE-SHIPMENT-ADDRESS
 router.post("/update-address", verifyUser, userinfo.updateShipmentAddress)
 // GET-USER-BY-ID
-router.get("/select-address", verifyUser, userinfo.updateShipmentAddress)
+router.get("/get-address", verifyUser, userinfo.getAddressById)
 
 
 
