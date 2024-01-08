@@ -38,7 +38,6 @@ const getAddressById = async (req, res) => {
     try {
         const addressId = req.params.addressId;
 
-        // Check if addressId is provided and is a valid ObjectId
         if (!addressId || !ObjectId.isValid(addressId)) {
             return res.status(400).json({
                 statusCode: 400,
