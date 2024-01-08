@@ -24,8 +24,8 @@ const addShipmentAddress = async (req, res) => {
         let auth = await authModal.findById(req.user._id)
         let ids = auth.addressids || []    //array
         ids.push(data._id)
-        authModal.findByIdAndUpdate(req.user._id, { addressids: ids })
-        return res.status(201).json({ message: "Shipment address addedsuccessfully", statusCode: 201 })
+        const updatedAuth = await authModal.findByIdAndUpdate(req.user._id, { addressids: ids })
+        return res.status(201).json({ message: "Shipment address added Successfully", statusCode: 201 })
     } catch (error) {
         console.log(error);
         console.error(error);
@@ -36,7 +36,8 @@ const addShipmentAddress = async (req, res) => {
 // GET-ADDRESS-By-ID
 const getAddressById = async (req, res) => {
     try {
-        const addressId = req.params.addressId;
+        const addressId = req.query.addressId;
+        console.log("addressId", addressId);
 
         if (!addressId || !ObjectId.isValid(addressId)) {
             return res.status(400).json({
@@ -46,7 +47,7 @@ const getAddressById = async (req, res) => {
         }
 
         // Find the address by ID
-        const address = await addressModal.findById(addressId);
+        const address = await addressModal.findById({_id:addressId});
 
         // Check if the address exists
         if (!address) {

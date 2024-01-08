@@ -75,9 +75,10 @@ const registerUser = async (req, res) => {
 // GET-USER-(newly done)
 const getUserById = async (req, res) => {
     try {
+        console.log("req.user:", req.user);
         const userId = req.user._id;
-        const user = await authmodel.findById({ userId });
-
+        const user = await authmodel.findById(userId);
+        console.log("user::", user);
         if (!user) {
             return res.status(404).json({
                 statusCode: 404,
@@ -85,10 +86,10 @@ const getUserById = async (req, res) => {
             });
         }
         return res.status(200).json({
-            statusCode:200,
-            message:"user found",
-            data:user
-    })
+            statusCode: 200,
+            message: "user found",
+            data: user
+        })
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal Server Error", statusCode: 500 });

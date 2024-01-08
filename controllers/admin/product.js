@@ -116,7 +116,7 @@ const getAllProducts = async (req, res) => {
     // }
     // --
     const result = await productService.getAllproducts(options, sort)
-    console.log("result", result);
+    // console.log("result", result);
     return res.json({
       statusCode: 200,
       message: "Products retrieved successfully",

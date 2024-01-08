@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const authSchema = new Schema({
 
     addressids: {
-        type:Array
+        type:[]
     },
     firstname: {
         type: String,
