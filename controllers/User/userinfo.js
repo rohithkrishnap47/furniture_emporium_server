@@ -34,20 +34,22 @@ const addShipmentAddress = async (req, res) => {
 
 // const { ObjectId } = require('mongoose').Types;
 // GET-ADDRESS-By-ID
+
 const getAddressById = async (req, res) => {
     try {
         const addressId = req.query.addressId;
         console.log("addressId", addressId);
 
-        if (!addressId || !ObjectId.isValid(addressId)) {
+        if (!addressId ) {
             return res.status(400).json({
                 statusCode: 400,
                 message: "Valid Address ID is required."
             });
         }
-
+        // const objectId = new ObjectId(addressId);
+        // console.log("objectId",objectId);
         // Find the address by ID
-        const address = await addressModal.findById({_id:addressId});
+        const address = await addressModal.findById(addressId);
 
         // Check if the address exists
         if (!address) {
