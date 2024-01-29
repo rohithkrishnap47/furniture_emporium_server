@@ -1,11 +1,12 @@
 
 // REQUIRE from database
 const { validationResult } = require("express-validator");
+const cartModel=require("../../models/cartModels")
 const Product = require("../../models/productModel");
 const cloudinary = require("../../services/cloudinary");
 const { productService } = require("../../services");//from "index.js" services
 //------------------------------------------------------------------------------ 
-// PRODUCTS
+
 
 // ADD_product
 const createProduct = async (req, res) => {
@@ -130,7 +131,7 @@ const getAllProducts = async (req, res) => {
 
 
 // GET_SINGLE_PRODUCT
-const getProductById = (productId) => {
+const getProductById =async (productId) => {
   return Product.findById(productId)
     .then((product) => {
       if (!product) {

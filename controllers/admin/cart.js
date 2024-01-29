@@ -94,7 +94,7 @@ const showCart = async (req, res) => {
 
         let cart = await Cart.findOne({ customer: userId }).populate("products.productId");
         // const cart = await Cart.findById({ customer: userId }).populate("products.name")
-        console.log("productsform cart", cart.products[0].productId)
+        console.log("productsfrom cart", cart)
         if (!cart) {
             return res.status(404).json({ message: "Cart not Found" })
         }
