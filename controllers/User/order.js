@@ -1,22 +1,54 @@
 const Order = require('../../models/orderModel');
+const Cart = require('../../models/cartModels');
+const razorpayInstance = require('../../services/razorpayService');
+const mongoose = require('mongoose');
 
 // Create a new order
 exports.createOrder = async (req, res) => {
     try {
-        req.body.customerId=req.user._id
-        const { customerId, product, deliveryAddress, cartDetails, paymentMethod } = req.body;
+        const userID = mongoose.Types.ObjectId(req.user._id)
 
+        const { product, deliveryAddress, paymentMethod } = req.body;
+        const cartDetails = await Cart.findOne({ customer: userID })
+        console.log(cartDetails);
         const newOrder = new Order({
-            customerId,
+            userID,
             product,
             deliveryAddress,
             cartDetails,
             paymentMethod,
         });
-
+        
         const savedOrder = await newOrder.save();
-
         res.status(201).json(savedOrder);
+
+        if (reqBody.paymentMode === "ONLINE") {
+            const razorPayOptions = {
+                amount: grandTotal * 100,
+                currency: "INR",
+                receipt: orderData.orderId,
+            };
+            const razorPayOrder = await razorpayInstance().orders.create(
+                razorPayOptions
+            );
+            orderData["razorpayOrderId"] = razorPayOrder.id;
+            responsePayload = {
+                ...responsePayload,
+                key: process.env.RAZORPAY_KEY_ID,
+                amount: razorPayOrder.amount,
+                currency: razorPayOrder.currency,
+                name: "LAMBDA GAMING",
+                order_id: razorPayOrder.id,
+                prefill: {
+                    name: reqBody.fullname,
+                    contact: reqBody.mobile,
+                    email: userEmail,
+                },
+                notes: {
+                    orderId: orderData.orderId,
+                },
+            };
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -88,3 +120,7 @@ exports.cancelOrder = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+
+
+// ================================================================
