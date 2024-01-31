@@ -19,6 +19,11 @@ const addressSchema = new Schema({
     pincode: {
         type: String,
     },
+    // newlyadded----------------------------
+    contactNumber:{
+        type:Number
+    },
+    // --------------------------------------
     password: {
         type: Number,
         // required: true,

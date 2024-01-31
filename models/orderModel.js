@@ -7,7 +7,7 @@ const orderSchema = new Schema({
         ref: "Auth",
     },
     product: {
-        type: mongoose.Types.ObjectId,
+        type: Array,
         ref: "Product"
     },
     deliveryAddress: {
@@ -18,17 +18,21 @@ const orderSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "Cart"
     },
-    paymentMethod: [{
-        couponUsed: {
-            type: mongoose.Types.ObjectId,
-            ref: "Coupon"
-        },
-        status: {
-            type: String,
-            enum: ["Pending", "Success"],
-        }
-
-    }],
+    paymentMethod: {
+        type:String 
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["Pending", "Success"],
+        default:"Pending"
+    },
+    totalAmount:{
+        type:Number
+    },
+    couponUsed: {
+        type: mongoose.Types.ObjectId,
+        ref: "Coupon"
+    },
     orderedDate:{
         type:Date,
         default:Date.now()
