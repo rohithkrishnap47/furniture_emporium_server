@@ -3,6 +3,9 @@ const moment = require("moment");
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
+    orderId: {
+        type: String,
+    },
     customerId: {
         type: mongoose.Types.ObjectId,
         ref: "Auth",
@@ -20,7 +23,8 @@ const orderSchema = new Schema({
         ref: "Cart"
     },
     paymentMethod: {
-        type: String
+        type: String,
+        enum: ["COD", "ONLINE"]
     },
     paymentStatus: {
         type: String,

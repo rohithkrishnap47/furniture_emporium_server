@@ -18,37 +18,50 @@ exports.createOrder = async (req, res) => {
             cartDetails,
             paymentMethod,
         });
-        
+        const razorpayOrder = await
+            razorpayInstance().orders.create({
+                amount: 100, currency: "INR", receipt: "", notes: {
+                    "description": "Best Course for SDE placements",
+                    "language": "Available in 4 major Languages JAVA, C/C++, Python, Javascript",
+                    "access": "This course have Lifetime Access"
+                }
+            },
+
+            )
+        if (razorpayOrder) {
+            newOrder["orderId"] = razorpayOrder.id
+        }
+
         const savedOrder = await newOrder.save();
         res.status(201).json(savedOrder);
 
-        if (reqBody.paymentMode === "ONLINE") {
-            const razorPayOptions = {
-                amount: grandTotal * 100,
-                currency: "INR",
-                receipt: orderData.orderId,
-            };
-            const razorPayOrder = await razorpayInstance().orders.create(
-                razorPayOptions
-            );
-            orderData["razorpayOrderId"] = razorPayOrder.id;
-            responsePayload = {
-                ...responsePayload,
-                key: process.env.RAZORPAY_KEY_ID,
-                amount: razorPayOrder.amount,
-                currency: razorPayOrder.currency,
-                name: "LAMBDA GAMING",
-                order_id: razorPayOrder.id,
-                prefill: {
-                    name: reqBody.fullname,
-                    contact: reqBody.mobile,
-                    email: userEmail,
-                },
-                notes: {
-                    orderId: orderData.orderId,
-                },
-            };
-        }
+        // if (reqBody.paymentMode === "ONLINE") {
+        //     const razorPayOptions = {
+        //         amount: grandTotal * 100,
+        //         currency: "INR",
+        //         receipt: orderData.orderId,
+        //     };
+        //     const razorPayOrder = await razorpayInstance().orders.create(
+        //         razorPayOptions
+        //     );
+        //     orderData["razorpayOrderId"] = razorPayOrder.id;
+        //     responsePayload = {
+        //         ...responsePayload,
+        //         key: process.env.RAZORPAY_KEY_ID,
+        //         amount: razorPayOrder.amount,
+        //         currency: razorPayOrder.currency,
+        //         name: "LAMBDA GAMING",
+        //         order_id: razorPayOrder.id,
+        //         prefill: {
+        //             name: reqBody.fullname,
+        //             contact: reqBody.mobile,
+        //             email: userEmail,
+        //         },
+        //         notes: {
+        //             orderId: orderData.orderId,
+        //         },
+        //     };
+        // }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -69,7 +82,8 @@ exports.getAllOrders = async (req, res) => {
 // Update order status
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { orderId } = req.params;
+        console.log("hellooooo");
+        const orderId = req.params.id;
         const { deliveryStatus, deliveredDate } = req.body;
 
         const updatedOrder = await Order.findByIdAndUpdate(
@@ -88,6 +102,8 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+// 
 
 // Cancel an order
 exports.cancelOrder = async (req, res) => {

@@ -4,12 +4,13 @@ const router = express.Router()
 const { verifyUser } = require('../middlewares/verifyUser');
 
 // POST
-router.post("/place-order",verifyUser,orderController.createOrder)
+router.post("/place-order", verifyUser, orderController.createOrder)
 // ALL-ORDERS
-router.get("/show-orders",verifyUser,orderController.getAllOrders)
+router.get("/show-orders", orderController.getAllOrders)//verify user not needed here inorder to show in adminside
 // CANCEL-ORDER
-router.delete("/delete-order",verifyUser,orderController.cancelOrder)
-
+router.patch("/delete-order", verifyUser, orderController.cancelOrder)
+// CHANGE-STATUS
+router.patch("/update-order-status/:id", orderController.updateOrderStatus)
 
 
 module.exports = router
