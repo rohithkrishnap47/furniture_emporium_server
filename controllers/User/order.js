@@ -2,14 +2,15 @@ const Order = require('../../models/orderModel');
 const Cart = require('../../models/cartModels');
 const razorpayInstance = require('../../services/razorpayService');
 const mongoose = require('mongoose');
+const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } = process.env;
 
 // Create a new order
 exports.createOrder = async (req, res) => {
     try {
         const userID = mongoose.Types.ObjectId(req.user._id)
 
-        const { product, deliveryAddress, paymentMethod } = req.body;
-        const cartDetails = await Cart.findOne({ customer: userID })
+        const { product, deliveryAddress, paymentMethod, couponUsed } = req.body;
+        const cartDetails = await Cart.findOne({ customer: userID }).populate("products.productId");
         console.log(cartDetails);
         const newOrder = new Order({
             userID,
@@ -17,10 +18,18 @@ exports.createOrder = async (req, res) => {
             deliveryAddress,
             cartDetails,
             paymentMethod,
+            couponUsed
+
         });
+        // cart total calculations
+        const cartTotalQuantity = cartDetails.products?.reduce((prev, curr) => prev + curr.quantity, 0)
+        const cartTotalPrice = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.price * curr.quantity), 0)
+        const cartTotalDiscount = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.discount * curr.quantity), 0)
+        const grandTotal = cartTotalPrice - cartTotalDiscount + 40;
+
         const razorpayOrder = await
             razorpayInstance().orders.create({
-                amount: 100, currency: "INR", receipt: "", notes: {
+                amount: grandTotal * 100, currency: "INR", receipt: "", notes: {
                     "description": "Best Course for SDE placements",
                     "language": "Available in 4 major Languages JAVA, C/C++, Python, Javascript",
                     "access": "This course have Lifetime Access"
@@ -35,33 +44,6 @@ exports.createOrder = async (req, res) => {
         const savedOrder = await newOrder.save();
         res.status(201).json(savedOrder);
 
-        // if (reqBody.paymentMode === "ONLINE") {
-        //     const razorPayOptions = {
-        //         amount: grandTotal * 100,
-        //         currency: "INR",
-        //         receipt: orderData.orderId,
-        //     };
-        //     const razorPayOrder = await razorpayInstance().orders.create(
-        //         razorPayOptions
-        //     );
-        //     orderData["razorpayOrderId"] = razorPayOrder.id;
-        //     responsePayload = {
-        //         ...responsePayload,
-        //         key: process.env.RAZORPAY_KEY_ID,
-        //         amount: razorPayOrder.amount,
-        //         currency: razorPayOrder.currency,
-        //         name: "LAMBDA GAMING",
-        //         order_id: razorPayOrder.id,
-        //         prefill: {
-        //             name: reqBody.fullname,
-        //             contact: reqBody.mobile,
-        //             email: userEmail,
-        //         },
-        //         notes: {
-        //             orderId: orderData.orderId,
-        //         },
-        //     };
-        // }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -103,7 +85,36 @@ exports.updateOrderStatus = async (req, res) => {
     }
 };
 
-// 
+// VERIFY-ORDER
+
+exports.verifyOrder = async (req, res) => {
+
+    // STEP 7: Receive Payment Data 
+    const { order_id, payment_id } = req.body;
+    const razorpay_signature = req.headers['x-razorpay-signature'];
+
+    // Pass yours key_secret here 
+    const key_secret = RAZORPAY_KEY_SECRET;
+
+    // STEP 8: Verification & Send Response to User 
+
+    // Creating hmac object 
+    let hmac = crypto.createHmac('sha256', key_secret);
+
+    // Passing the data to be hashed 
+    hmac.update(order_id + "|" + payment_id);
+
+    // Creating the hmac in the required format 
+    const generated_signature = hmac.digest('hex');
+
+
+    if (razorpay_signature === generated_signature) {
+        res.json({ success: true, message: "Payment has been verified" })
+    }
+    else
+        res.json({ success: false, message: "Payment verification failed" })
+};
+
 
 // Cancel an order
 exports.cancelOrder = async (req, res) => {

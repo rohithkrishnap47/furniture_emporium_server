@@ -43,6 +43,9 @@ router.post("/update-address", verifyUser, userinfo.updateShipmentAddress)
 // GET-USER-BY-ID
 router.get("/get-address",  userinfo.getAddressById)
 
+// router.get('/get-contacts', userinfo.getAllContacts);
+// router.post('/add-contacts', userinfo.createContact);
+// router.delete('/remove-contacts/:id', userinfo.deleteContact);
 
 
 module.exports = router

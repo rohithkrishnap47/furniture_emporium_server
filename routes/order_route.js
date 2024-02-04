@@ -11,6 +11,8 @@ router.get("/show-orders", orderController.getAllOrders)//verify user not needed
 router.patch("/delete-order", verifyUser, orderController.cancelOrder)
 // CHANGE-STATUS
 router.patch("/update-order-status/:id", orderController.updateOrderStatus)
+// VERIFY-USER
+router.post("/verify-Order", orderController.verifyOrder)
 
 
 module.exports = router

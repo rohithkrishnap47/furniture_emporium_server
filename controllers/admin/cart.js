@@ -38,6 +38,7 @@ const addToCart = async (req, res) => {
                 totalQuantity: 0,
                 totalPrice: 0,
                 totalDiscountprice: 0,
+                
                 products: [],
             });
         }
@@ -93,7 +94,6 @@ const showCart = async (req, res) => {
         }
 
         let cart = await Cart.findOne({ customer: userId }).populate("products.productId");
-        // const cart = await Cart.findById({ customer: userId }).populate("products.name")
         console.log("productsfrom cart", cart)
         if (!cart) {
             return res.status(404).json({ message: "Cart not Found" })
@@ -110,12 +110,14 @@ const showCart = async (req, res) => {
         const cartTotalQuantity = cart.products?.reduce((prev, curr) => prev + curr.quantity, 0)
         const cartTotalPrice = cart.products?.reduce((prev, curr) => prev + (curr.productId.price * curr.quantity), 0)
         const cartTotalDiscount = cart.products?.reduce((prev, curr) => prev + (curr.productId.discount * curr.quantity), 0)
+        const grandTotal = cartTotalPrice - cartTotalDiscount + 40;
 
         const response = {
             totalQuantity: cartTotalQuantity,
             totalPrice: cartTotalPrice,
             totalDiscountprice: cartTotalDiscount,
-            cartProducts
+            grandTotal: grandTotal,
+            cartProducts,
         }
         return res.status(200).json(response)
     } catch (error) {

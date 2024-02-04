@@ -1,5 +1,7 @@
 const addressModal = require("../../models/addressModal")
 const authModal = require('../../models/authModal');
+const Contact = require('../../models/contactUsModel');
+
 
 // ADD-SHIPMENT-ADDRESS
 const addShipmentAddress = async (req, res) => {
@@ -122,6 +124,54 @@ const updateShipmentAddress = async (req, res) => {
         });
     }
 };
+
+// - - - - - - - - - - - - - - - - - - - - - - - - -
+// GET all contacts
+exports.getAllContacts = async (req, res) => {
+    try {
+        const contacts = await Contact.find();
+        res.json(contacts);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+// POST a new contact
+exports.createContact = async (req, res) => {
+    const { firstName, lastName, email, phoneNumber, message } = req.body;
+
+    try {
+        const newContact = new Contact({
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            message
+        });
+
+        const savedContact = await newContact.save();
+        res.status(201).json(savedContact);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+// DELETE a contact by ID
+exports.deleteContact = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedContact = await Contact.findByIdAndDelete(id);
+        if (!deletedContact) {
+            return res.status(404).json({ message: 'Contact not found' });
+        }
+        res.json({ message: 'Contact deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+// - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 module.exports = {
     addShipmentAddress,
