@@ -160,9 +160,17 @@ exports.getProductsByCategory = async (req, res) => {
   try {
     const categorylist = categoryModal.find()
     const productlist = productModal.find()
-    const productByCategory = categorylist.forEach(item=>{
-      item.produts=[]
+    const productByCategory = categorylist.forEach(item => {
+      item.products = productlist.find(p => {
+        return p.category == item.categoryName
+      })
+
     })
+    return {
+      statusCode: 200,
+      message: "success",
+      data: productByCategory,
+    };
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
