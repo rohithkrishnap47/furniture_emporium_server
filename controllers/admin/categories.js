@@ -1,4 +1,5 @@
 const categoryModal = require("../../models/categoryModel");
+const productModal = require("../../models/productModel")
 
 // CATEGORIES
 // ADD_category
@@ -34,17 +35,17 @@ const createcategory = async (categoryData) => {
         data: caT.categoryName,
       };
     }
-      const newcategories = new categoryModal({
-        categoryName: categoryData.categoryName,
-        categoryImages: categoryData.categoryImages,
-        description: categoryData.description,
-      })
-      await newcategories.save()
-      return {
-        statusCode: 200,
-        message: "category created"
-      }
+    const newcategories = new categoryModal({
+      categoryName: categoryData.categoryName,
+      categoryImages: categoryData.categoryImages,
+      description: categoryData.description,
+    })
+    await newcategories.save()
+    return {
+      statusCode: 200,
+      message: "category created"
     }
+  }
   catch (error) {
     console.log(error);
   }
@@ -154,6 +155,19 @@ const deletecategory = (categoryId) => {
     });
 };
 
+// GET-PRODUCT-BY-CATEGORY
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const categorylist = categoryModal.find()
+    const productlist = productModal.find()
+    const productByCategory = categorylist.forEach(item=>{
+      item.produts=[]
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
 
 //------------------------------------------------------------------------------ 
 module.exports = {

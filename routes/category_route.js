@@ -65,5 +65,8 @@ router.delete("/deletecategory/:id", (req, res) => {
     });
 });
 
+// GET-CATEGORY-BY-PRODUCT
+// router.get("/category-by-product",categoryController)
 
-module.exports = router 
+
+module.exports = router
