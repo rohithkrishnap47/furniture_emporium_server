@@ -5,10 +5,64 @@ const generateOTP = require('../../utils/generateOTP')
 const nodemailer = require('../../utils/mailer');
 const adminModal = require('../../models/adminModel');
 const Cookies = require('js-cookie');
-const SuperAdmin = require('../../models/authModal');
+const SuperAdmin = require('../../models/superAdminModel');
 // const { cookie } = require('express-validator');
 
 
+// SUPER-ADMIN-CREATE-----------------------------------------------------------------
+const registerSuperAdmin = async (req, res) => {
+    try {
+        // Extract data from request body
+        const { fullName, email, password } = req.body;
+        // Check if the email is already registered
+        const existingSuperAdmin = await SuperAdmin.findOne({ email });
+        if (existingSuperAdmin) {
+            return res.status(400).json({ message: 'Email is already registered' });
+        }
+        // Hash the password before saving it to the database
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // Create a new super admin instance
+        const newSuperAdmin = new SuperAdmin({
+            fullName,
+            email,
+            password: hashedPassword,
+        });
+        // Save the new super admin to the database
+        await newSuperAdmin.save();
+        res.status(201).json({ message: 'Super admin created successfully' });
+    } catch (error) {
+        console.error('Error creating super admin:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+// SUPER-ADMIN-LOGIN------------------------------------------------------------------
+const loginSuperAdmin = async (req, res) => {
+    try {
+        // Extract data from request body
+        const { email, password } = req.body;
+
+        const superAdmin = await SuperAdmin.findOne({ email });
+        if (!superAdmin) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        // Compare passwords
+        const isPasswordValid = await bcrypt.compare(password, superAdmin.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        // Generate JWT token
+        const token = jwt.sign({ userId: superAdmin._id }, 'your_secret_key', { expiresIn: '1h' });
+
+        res.status(200).json({ message: 'Login successful', token });
+    } catch (error) {
+        console.error('Error logging in super admin:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+// -------------------------------------------------------------------------------------
+// USER-LOGIN--------------------------------------------------------------------------
 const loginUser = async (req, res) => {
 
     try {
@@ -180,7 +234,6 @@ const resetPassword = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Update the user's password with the hashed password
         await authmodel.findOneAndUpdate(
             { emailaddress },
             { $set: { password: hashedPassword } },
@@ -232,4 +285,4 @@ const loginAdmin = async (req, res) => {
 
 
 
-module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification, getUserById };
+module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification, getUserById, registerSuperAdmin, loginSuperAdmin };
