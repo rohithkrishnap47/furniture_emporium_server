@@ -18,5 +18,11 @@ router.get("/getuserbyid", verifyUser, authController.getUserById)//get user by 
 // admin-login-route
 router.post("/adminlogin", authController.loginAdmin)
 
+// super-admin-register
+router.post("/superadminsignup", authController.registerSuperAdmin)
+
+// super-admin-register
+router.post("/superadminlogin", authController.loginSuperAdmin)
+
 module.exports = router
 

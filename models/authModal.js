@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const authSchema = new Schema({
 
     addressids: {
-        type:[]
+        type: []
     },
     firstname: {
         type: String,
@@ -35,15 +35,6 @@ const authSchema = new Schema({
     }
 })
 
-// Super-Admin-login-setup-----------------------------------------
-// const superAdminSchema = new mongoose.Schema({
-//     username: { type: String, required: true, unique: true },
-//     password: { type: String, required: true },
-// });
-
-
-// const SuperAdmin = mongoose.model('SuperAdmin', superAdminSchema);
 // ----------------------------------------------------------------
 const Auth = mongoose.model("Auth", authSchema);
-module.exports =  Auth
-// module.exports =  SuperAdmin 
+module.exports = Auth

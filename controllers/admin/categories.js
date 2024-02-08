@@ -158,6 +158,7 @@ const deletecategory = (categoryId) => {
 // GET-PRODUCT-BY-CATEGORY
 exports.getProductsByCategory = async (req, res) => {
   try {
+    console.log("haiiiii");
     const categorylist = categoryModal.find()
     const productlist = productModal.find()
     const productByCategory = categorylist.forEach(item => {
