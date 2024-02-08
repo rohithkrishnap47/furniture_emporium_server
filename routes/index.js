@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.use("/auth", require("./auth_route")),
     app.use("/user", require("./user_route"))
     app.use("/user", require("./order_route"))
-    app.use("/user", require("./category_route"))
+    // app.use("/user", require("./category_route"))
 
 }
 // module.exports=router

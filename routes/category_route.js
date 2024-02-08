@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const categoryController = require('../controllers/admin/categories');
-const {body, query, validationResult} = require("express-validator")
+const { body, query, validationResult } = require("express-validator")
 
 
 // Category_ROUTE
@@ -13,8 +13,8 @@ const createValidator = [
     body("description").notEmpty(),
 ]
 
-router.post("/createCategory",createValidator,  (req, res) => {
-    const error = validationResult(req) 
+router.post("/createCategory", createValidator, (req, res) => {
+    const error = validationResult(req)
     if (!error.isEmpty()) {
         return res.status(400).json({
             statusCode: 400,
@@ -31,13 +31,13 @@ router.post("/createCategory",createValidator,  (req, res) => {
 
 })
 // Update 
-router.put("/updatecategory/:id",(req,res)=>{
-    const productId= req.params.id;
-    const updateddata= req.body;
-    categoryController.updatecategory(productId,updateddata).then(result => {
+router.put("/updatecategory/:id", (req, res) => {
+    const productId = req.params.id;
+    const updateddata = req.body;
+    categoryController.updatecategory(productId, updateddata).then(result => {
         res.status(result.statusCode).json(result)
     })
-    
+
 })
 // GET
 router.get("/category/:id", (req, res) => {
@@ -65,8 +65,17 @@ router.delete("/deletecategory/:id", (req, res) => {
     });
 });
 
-// GET-CATEGORY-BY-PRODUCT
-// router.get("/category-by-product",categoryController)
 
+// GET-CATEGORY-BY-PRODUCT
+// router.get("/category-by-product",categoryController.getProductsByCategory)
+// router.get("/category-by-product", categoryController.getProductsByCategory, (req, res, next) => {
+//     // Your existing middleware functions (if any)
+
+//     // Add your console.log statement here, specifying what you want to log
+//     console.log("harrrrrrrrrrrrrrrrrrrrrr");
+
+//     // Call the categoryController.getProductsByCategory function and handle its response
+//     next(); // Assuming you have middleware to handle the response
+// });
 
 module.exports = router
