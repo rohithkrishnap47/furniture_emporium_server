@@ -21,6 +21,9 @@ const authSchema = new Schema({
         type: String,
         required: true
     },
+    mobile:{
+        type:String
+    },
     createdAt: {
         type: Date
     },
