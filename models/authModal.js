@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const authSchema = new Schema({
-
     addressids: {
         type: []
     },
@@ -25,10 +24,12 @@ const authSchema = new Schema({
         type:String
     },
     createdAt: {
-        type: Date
+        type: Date,
+        default: Date.now // Set default value to current date/time
     },
     updatedAt: {
-        type: Date
+        type: Date,
+        default: Date.now // Set default value to current date/time
     },
     otp: {
         type: String
@@ -36,8 +37,12 @@ const authSchema = new Schema({
     otp_expiry: {
         type: Date,
     }
-})
+});
 
-// ----------------------------------------------------------------
+authSchema.pre('save', function(next) {
+    this.updatedAt = new Date();
+    next();
+});
+
 const Auth = mongoose.model("Auth", authSchema);
-module.exports = Auth
+module.exports = Auth;
