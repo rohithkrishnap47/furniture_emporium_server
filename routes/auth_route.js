@@ -21,7 +21,7 @@ router.post("/adminlogin", authController.loginAdmin)
 // super-admin-register
 router.post("/superadminsignup", authController.registerSuperAdmin)
 
-// super-admin-register
+// super-admin-login
 router.post("/superadminlogin", authController.loginSuperAdmin)
 
 module.exports = router
