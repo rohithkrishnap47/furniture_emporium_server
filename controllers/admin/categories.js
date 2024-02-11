@@ -91,18 +91,21 @@ const updatecategory = (categoryId, updatedcategoryData) => {
   )
     .then((category) => {
       if (!category) {
+        console.log("Category not found");
         return {
           statusCode: 404,
-          message: "category not found",
+          message: "Category not found",
         };
       }
+      console.log("Category updated successfully:", category);
       return {
         statusCode: 200,
-        message: "category updated successfully",
+        message: "Category updated successfully",
         data: category,
       };
     })
     .catch((error) => {
+      console.error("Internal Server Error:", error);
       return {
         statusCode: 500,
         message: "Internal Server Error",
@@ -110,6 +113,7 @@ const updatecategory = (categoryId, updatedcategoryData) => {
       };
     });
 };
+
 
 
 
