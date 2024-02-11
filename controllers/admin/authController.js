@@ -51,9 +51,12 @@ const loginSuperAdmin = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
         // Generate JWT token
-        const token = jwt.sign({ userId: superAdmin._id }, 'your_secret_key', { expiresIn: '1h' });
-
-        res.status(200).json({ message: 'Login successful', token });
+        const token = jwt.sign({ userId: superAdmin._id }, process.env.SUPER_ADMIN_TOKEN, { expiresIn: '1h' });
+        const adminInfo = {
+            fullName: superAdmin.fullName,
+            email: superAdmin.email
+        }
+        res.status(200).json({ message: 'Login successful', token, adminInfo });
     } catch (error) {
         console.error('Error logging in super admin:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -97,8 +100,8 @@ const loginUser = async (req, res) => {
 
 const registerUser = async (req, res) => {
     try {
-        const { emailaddress, password, firstname, lastname } = req.body;
-        if (!emailaddress || !password || !firstname || !lastname) {
+        const { emailaddress, password, firstname, lastname, mobile } = req.body;
+        if (!emailaddress || !password || !firstname || !lastname || !mobile) {
             return res.status(400).json({
                 statusCode: 400,
                 message: "feilds missing"
@@ -116,7 +119,8 @@ const registerUser = async (req, res) => {
             emailaddress,
             password: await bcrypt.hash(password, 10),
             firstname,
-            lastname
+            lastname,
+            mobile
         });
         await newUser.save();
         return res.status(201).json({ message: "user created successfully", statusCode: 201 })
