@@ -5,25 +5,7 @@ const productModal = require("../../models/productModel")
 // ADD_category
 const createcategory = async (categoryData) => {
   console.log("categdata******", categoryData)
-  // validating categoryname, categoryimage, description
-  // if (!categoryData.categoryName) {
-  //   return {
-  //     statusCode: 400,
-  //     message: "Category name not found"
-  //   }
-  // }
-  // if (!categoryData.categoryImages) {
-  //   return {
-  //     statusCode: 400,
-  //     message: "Category Image not found"
-  //   }
-  // }
-  // if (!categoryData.description) {
-  //   return {
-  //     statusCode: 400,
-  //     message: "Category Description not found"
-  //   }
-  // }
+
 
   try {
     const caT = await categoryModal.findOne({ categoryName: categoryData.categoryName })
