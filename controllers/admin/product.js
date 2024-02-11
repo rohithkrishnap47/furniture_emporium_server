@@ -1,7 +1,7 @@
 
 // REQUIRE from database
 const { validationResult } = require("express-validator");
-const cartModel=require("../../models/cartModels")
+const cartModel = require("../../models/cartModels")
 const Product = require("../../models/productModel");
 const cloudinary = require("../../services/cloudinary");
 const { productService } = require("../../services");//from "index.js" services
@@ -13,7 +13,7 @@ const createProduct = async (req, res) => {
   try {
     const productData = req.body;
     const errors = validationResult(req);
-
+    console.log("proData", productData);
     if (!errors.isEmpty()) {
       return res.status(400).json({
         statusCode: 400,
@@ -21,6 +21,15 @@ const createProduct = async (req, res) => {
         errors: errors.array(),
       });
     }
+
+    if (!req.file) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "No file found",
+      });
+    }
+
+    console.log("File received:", req.file);
 
     const product = await Product.findOne({ name: productData.name });
 
@@ -32,14 +41,11 @@ const createProduct = async (req, res) => {
       });
     }
 
-    if (!req.file) {
-      return res.status(400).json({
-        statusCode: 400,
-        message: "No file found",
-      });
-    }
+    console.log("Uploading file to Cloudinary...");
 
     const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+
+    console.log("File uploaded to Cloudinary:", upload);
 
     const newProduct = new Product({
       name: productData.name,
@@ -68,6 +74,7 @@ const createProduct = async (req, res) => {
     });
   }
 };
+
 
 module.exports = createProduct;
 
@@ -131,7 +138,7 @@ const getAllProducts = async (req, res) => {
 
 
 // GET_SINGLE_PRODUCT
-const getProductById =async (productId) => {
+const getProductById = async (productId) => {
   return Product.findById(productId)
     .then((product) => {
       if (!product) {
@@ -160,39 +167,41 @@ const getProductById =async (productId) => {
 // update_product
 const updateProduct = async (req, res) => {
   try {
-    const productId = req.params.id
-    const body = req.body
-    const product = Product.find(productId)
-    if (!product) {
-      throw new Error("product not found")
-    }
-    let uploadimg
-    if (req.file) {
+    const productId = req.params.id;
+    const body = req.body;
+    const product = await Product.findById(productId);
 
+    if (!product) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Product not found",
+      });
+    }
+
+    let uploadimg;
+    if (req.file) {
       uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
       console.log("uploadimg", uploadimg);
+      body.images = uploadimg.secure_url; 
     }
-    if (!uploadimg) {
-      return {
-        statusCode: 200,
-        message: "Product found",
-      }
 
-    };
-    const updatedData = await Product.findByIdAndUpdate(productId, body)
-    return {
+    const updatedProduct = await Product.findByIdAndUpdate(productId, body, { new: true });
+
+    res.status(200).json({
       statusCode: 200,
       message: "Product updated",
-    };
+      data: updatedProduct,
+    });
   } catch (error) {
-    return {
-      statusCode: 200,
-      message: "Product found",
+    console.error("Server error:", error);
+    res.status(500).json({
+      statusCode: 500,
+      message: "Internal server error",
       error: error.message,
-    }
+    });
+  }
+};
 
-  };
-}
 // -----------------------------------------------------
 // DELETE_PRODUCT
 const deleteProduct = (productId) => {
