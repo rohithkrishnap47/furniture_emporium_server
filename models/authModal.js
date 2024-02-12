@@ -20,6 +20,9 @@ const authSchema = new Schema({
         type: String,
         required: true
     },
+    isblocked:{
+        type:Boolean
+    },
     mobile:{
         type:String
     },
