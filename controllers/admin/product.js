@@ -14,6 +14,8 @@ const createProduct = async (req, res) => {
     const productData = req.body;
     const errors = validationResult(req);
     console.log("proData", productData);
+    
+    // Check for validation errors
     if (!errors.isEmpty()) {
       return res.status(400).json({
         statusCode: 400,
@@ -22,6 +24,7 @@ const createProduct = async (req, res) => {
       });
     }
 
+    // Check if file exists in the request
     if (!req.file) {
       return res.status(400).json({
         statusCode: 400,
@@ -31,6 +34,7 @@ const createProduct = async (req, res) => {
 
     console.log("File received:", req.file);
 
+    // Check if product with the same name already exists
     const product = await Product.findOne({ name: productData.name });
 
     if (product) {
@@ -43,10 +47,12 @@ const createProduct = async (req, res) => {
 
     console.log("Uploading file to Cloudinary...");
 
+    // Upload file to Cloudinary
     const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
 
     console.log("File uploaded to Cloudinary:", upload);
 
+    // Create new product instance
     const newProduct = new Product({
       name: productData.name,
       category: productData.category,
@@ -58,8 +64,10 @@ const createProduct = async (req, res) => {
       stock: productData.stock,
     });
 
+    // Save new product to the database
     await newProduct.save();
 
+    // Return success response
     res.status(201).json({
       statusCode: 201,
       message: "Product created successfully",
@@ -74,6 +82,7 @@ const createProduct = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports = createProduct;
