@@ -65,6 +65,41 @@ const loginSuperAdmin = async (req, res) => {
 
 
 // -------------------------------------------------------------------------------------
+// UPDATE-USER
+const updateUser = async (req, res) => {
+    const { firstname, lastname, emailaddress, mobile } = req.body;
+
+    try {
+        const user = await authModel.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (firstname) {
+            user.firstname = firstname;
+        }
+
+        if (lastname) {
+            user.lastname = lastname;
+        }
+
+        if (emailaddress) {
+            user.emailaddress = emailaddress;
+        }
+
+        if (mobile) {
+            user.mobile = mobile;
+        }
+
+        await user.save();
+
+        res.status(200).json({ message: 'User updated successfully', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 // USER-LOGIN--------------------------------------------------------------------------
 const loginUser = async (req, res) => {
 
@@ -291,4 +326,4 @@ const loginAdmin = async (req, res) => {
 
 
 
-module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification, getUserById, registerSuperAdmin, loginSuperAdmin };
+module.exports = { loginUser, loginAdmin, registerUser, forgotpassword, resetPassword, otpverification, getUserById, registerSuperAdmin, loginSuperAdmin, updateUser };
