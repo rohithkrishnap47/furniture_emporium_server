@@ -48,8 +48,6 @@ const getAddressById = async (req, res) => {
                 message: "Valid Address ID is required."
             });
         }
-        // const objectId = new ObjectId(addressId);
-        // console.log("objectId",objectId);
         // Find the address by ID
         const address = await addressModal.findById(addressId);
 
@@ -64,7 +62,8 @@ const getAddressById = async (req, res) => {
         return res.status(200).json({
             message: "Address retrieved successfully",
             statusCode: 200,
-            address: address
+            address: address,
+            // mobile: address.contactNumber
         });
     } catch (error) {
         console.error(error);
