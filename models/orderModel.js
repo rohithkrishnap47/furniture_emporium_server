@@ -22,9 +22,9 @@ const orderSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "Cart"
     },
-    paymentMethod: {
+    PaymentMethod: {
         type: String,
-        enum: ["COD", "ONLINE"]
+        enum: ["COD", "ONLINE","checkoutPaymentPaypal"]
     },
     paymentStatus: {
         type: String,
@@ -42,12 +42,15 @@ const orderSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    isCancelled: {
+        type: Boolean
+    },
     deliveredDate: {
         type: Date
     },
     deliveryStatus: {
         type: String,
-        enum: ["Pending", "Processing", "Shipped", "Delivered"],
+        enum: ["Pending",  "Shipped", "Delivered","Cancelled"],
         default: "Pending"
     }
 });

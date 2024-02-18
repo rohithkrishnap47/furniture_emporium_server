@@ -99,12 +99,13 @@ const showCart = async (req, res) => {
             return res.status(404).json({ message: "Cart not Found" })
         }
         const cartProducts = cart.products?.map(product => ({
-            _id: product.productId._id,
-            name: product.productId.name,
+            _id: product.productId?._id, // Check if product.productId is not null
+            name: product.productId?.name, // Optional chaining to access name property
             quantity: product.quantity,
-            price: product.productId.price,
-            images: product.productId.images
+            price: product.productId?.price, // Optional chaining to access price property
+            images: product.productId?.images // Optional chaining to access images property
         }));
+        
 
         // cart total calculations
         const cartTotalQuantity = cart.products?.reduce((prev, curr) => prev + curr.quantity, 0)

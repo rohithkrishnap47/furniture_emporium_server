@@ -14,7 +14,7 @@ const createProduct = async (req, res) => {
     const productData = req.body;
     const errors = validationResult(req);
     console.log("proData", productData);
-    
+
     // Check for validation errors
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -191,7 +191,7 @@ const updateProduct = async (req, res) => {
     if (req.file) {
       uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
       console.log("uploadimg", uploadimg);
-      body.images = uploadimg.secure_url; 
+      body.images = uploadimg.secure_url;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(productId, body, { new: true });

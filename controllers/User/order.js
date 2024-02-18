@@ -3,29 +3,31 @@ const Cart = require('../../models/cartModels');
 const razorpayInstance = require('../../services/razorpayService');
 const mongoose = require('mongoose');
 const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } = process.env;
+// const verifyUser  = require('../middlewares/verifyUser');
 
 // Create a new order
 exports.createOrder = async (req, res) => {
     try {
-        const userID = mongoose.Types.ObjectId(req.user._id)
+        const customerId = mongoose.Types.ObjectId(req.user._id)
 
-        const { product, deliveryAddress, paymentMethod, couponUsed } = req.body;
-        const cartDetails = await Cart.findOne({ customer: userID }).populate("products.productId");
-        console.log(cartDetails);
+        const { product, deliveryAddress, couponUsed ,PaymentMethod} = req.body;
+        const cartDetails = await Cart.findOne({ customer: customerId }).populate("products.productId");
+        console.log("cartDetails:",cartDetails);
+        console.log("PaymentMethod:",PaymentMethod);
         const newOrder = new Order({
-            userID,
+            customerId,
             product,
             deliveryAddress,
             cartDetails,
-            paymentMethod,
-            couponUsed
-
+            PaymentMethod,
+            couponUsed,
         });
+        console.log("newOrder------:",newOrder);
         // cart total calculations
         const cartTotalQuantity = cartDetails.products?.reduce((prev, curr) => prev + curr.quantity, 0)
         const cartTotalPrice = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.price * curr.quantity), 0)
         const cartTotalDiscount = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.discount * curr.quantity), 0)
-        const grandTotal = cartTotalPrice - cartTotalDiscount + 40;
+        var grandTotal = cartTotalPrice - cartTotalDiscount + 40;
 
         const razorpayOrder = await
             razorpayInstance().orders.create({
@@ -53,13 +55,26 @@ exports.createOrder = async (req, res) => {
 // Get all orders
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find().populate('customerId product deliveryAddress cartDetails paymentMethod.couponUsed');
+        const orders = await Order.find().populate('customerId product deliveryAddress cartDetails PaymentMethod.couponUsed');
         res.status(200).json(orders);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+// Get USER orders
+exports.getuserOrder = async (req, res) => {
+    try {
+        const userID = mongoose.Types.ObjectId(req.user._id)
+        const orders = await Order.find({customerId:userID}).populate('customerId product deliveryAddress cartDetails PaymentMethod.couponUsed');
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 
 // Update order status
 exports.updateOrderStatus = async (req, res) => {
@@ -116,15 +131,13 @@ exports.verifyOrder = async (req, res) => {
 };
 
 
-// Cancel an order
+// CANCEL-ORDER
 exports.cancelOrder = async (req, res) => {
     try {
-        const { orderId } = req.params;
+        const { orderId } = req.body;
 
-        // Find the order by ID
         const order = await Order.findById(orderId);
 
-        // Check if the order exists
         if (!order) {
             return res.status(404).json({ error: 'Order not found' });
         }
@@ -134,7 +147,6 @@ exports.cancelOrder = async (req, res) => {
             return res.status(400).json({ error: 'Cannot cancel a delivered order' });
         }
 
-        // Update order status to 'Cancelled'
         const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
             { deliveryStatus: 'Cancelled' },
