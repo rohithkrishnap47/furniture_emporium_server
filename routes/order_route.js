@@ -7,6 +7,8 @@ const { verifyUser } = require('../middlewares/verifyUser');
 router.post("/place-order", verifyUser, orderController.createOrder)
 // ALL-ORDERS
 router.get("/show-orders", orderController.getAllOrders)//verify user not needed here inorder to show in adminside
+// USER-ORDERS
+router.get("/user-orders", verifyUser, orderController.getuserOrder)
 // CANCEL-ORDER
 router.patch("/delete-order", verifyUser, orderController.cancelOrder)
 // CHANGE-STATUS
