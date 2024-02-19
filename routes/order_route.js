@@ -9,6 +9,8 @@ router.post("/place-order", verifyUser, orderController.createOrder)
 router.get("/show-orders", orderController.getAllOrders)//verify user not needed here inorder to show in adminside
 // USER-ORDERS
 router.get("/user-orders", verifyUser, orderController.getuserOrder)
+// USER-ORDER-REVENUE
+router.get("/user-orders-revenue", orderController.getorderRevenue)
 // CANCEL-ORDER
 router.patch("/delete-order", verifyUser, orderController.cancelOrder)
 // CHANGE-STATUS
