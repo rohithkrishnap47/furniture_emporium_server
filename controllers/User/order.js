@@ -10,10 +10,17 @@ exports.createOrder = async (req, res) => {
     try {
         const customerId = mongoose.Types.ObjectId(req.user._id)
 
-        const { product, deliveryAddress, couponUsed ,PaymentMethod} = req.body;
+        const { product, deliveryAddress, couponUsed, PaymentMethod } = req.body;
         const cartDetails = await Cart.findOne({ customer: customerId }).populate("products.productId");
-        console.log("cartDetails:",cartDetails);
-        console.log("PaymentMethod:",PaymentMethod);
+        console.log("cartDetails:", cartDetails);
+        console.log("PaymentMethod:", PaymentMethod);
+
+        
+        // cart total calculations
+        const cartTotalQuantity = cartDetails.products?.reduce((prev, curr) => prev + curr.quantity, 0)
+        const cartTotalPrice = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.price * curr.quantity), 0)
+        const cartTotalDiscount = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.discount * curr.quantity), 0)
+        var grandTotal = cartTotalPrice - cartTotalDiscount + 40;
         const newOrder = new Order({
             customerId,
             product,
@@ -21,14 +28,9 @@ exports.createOrder = async (req, res) => {
             cartDetails,
             PaymentMethod,
             couponUsed,
+            totalAmount:grandTotal
         });
-        console.log("newOrder------:",newOrder);
-        // cart total calculations
-        const cartTotalQuantity = cartDetails.products?.reduce((prev, curr) => prev + curr.quantity, 0)
-        const cartTotalPrice = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.price * curr.quantity), 0)
-        const cartTotalDiscount = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.discount * curr.quantity), 0)
-        var grandTotal = cartTotalPrice - cartTotalDiscount + 40;
-
+        console.log("newOrder------:", newOrder);
         const razorpayOrder = await
             razorpayInstance().orders.create({
                 amount: grandTotal * 100, currency: "INR", receipt: "", notes: {
@@ -67,7 +69,7 @@ exports.getAllOrders = async (req, res) => {
 exports.getuserOrder = async (req, res) => {
     try {
         const userID = mongoose.Types.ObjectId(req.user._id)
-        const orders = await Order.find({customerId:userID}).populate('customerId product deliveryAddress cartDetails PaymentMethod.couponUsed');
+        const orders = await Order.find({ customerId: userID }).populate('customerId product deliveryAddress cartDetails PaymentMethod.couponUsed');
         res.status(200).json(orders);
     } catch (error) {
         console.error(error);
@@ -104,14 +106,11 @@ exports.updateOrderStatus = async (req, res) => {
 
 exports.verifyOrder = async (req, res) => {
 
-    // STEP 7: Receive Payment Data 
     const { order_id, payment_id } = req.body;
     const razorpay_signature = req.headers['x-razorpay-signature'];
 
-    // Pass yours key_secret here 
     const key_secret = RAZORPAY_KEY_SECRET;
 
-    // STEP 8: Verification & Send Response to User 
 
     // Creating hmac object 
     let hmac = crypto.createHmac('sha256', key_secret);
@@ -160,6 +159,76 @@ exports.cancelOrder = async (req, res) => {
     }
 };
 
+//  GET-ORDER-REVENUE
+exports.getorderRevenue = async (req, res) => {
+    try {
+        const orders = await Order.find()
+        const monthlyIncome = {
+            January: 0,
+            February: 0,
+            March: 0,
+            April: 0,
+            May: 0,
+            June: 0,
+            July: 0,
+            August: 0,
+            September: 0,
+            October: 0,
+            November: 0,
+            December: 0
+        };
+        console.log("orders::::",orders);
+        // Iterate through each order
+        orders.forEach(order => {
+            const totalAmount = order.totalAmount;
+            const orderMonth = new Date(order.orderedDate).getMonth();
 
+            switch (orderMonth) {
+                case 0:
+                    monthlyIncome.January += totalAmount;
+                    break;
+                case 1:
+                    monthlyIncome.February += totalAmount;
+                    break;
+                case 2:
+                    monthlyIncome.March += totalAmount;
+                    break;
+                case 3:
+                    monthlyIncome.April += totalAmount;
+                    break;
+                case 4:
+                    monthlyIncome.May += totalAmount;
+                    break;
+                case 5:
+                    monthlyIncome.June += totalAmount;
+                    break;
+                case 6:
+                    monthlyIncome.July += totalAmount;
+                    break;
+                case 7:
+                    monthlyIncome.August += totalAmount;
+                    break;
+                case 8:
+                    monthlyIncome.September += totalAmount;
+                    break;
+                case 9:
+                    monthlyIncome.October += totalAmount;
+                    break;
+                case 10:
+                    monthlyIncome.November += totalAmount;
+                    break;
+                case 11:
+                    monthlyIncome.December += totalAmount;
+                    break;
+                default:
+                    break;
+            }
+        });
+        res.status(200).json(monthlyIncome);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 // ================================================================
