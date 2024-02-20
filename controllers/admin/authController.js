@@ -6,6 +6,8 @@ const nodemailer = require('../../utils/mailer');
 const adminModal = require('../../models/adminModel');
 const Cookies = require('js-cookie');
 const SuperAdmin = require('../../models/superAdminModel');
+const { sendLoginConfirmationEmail } = require('../../utils/mailer'); // Import the sendLoginConfirmationEmail function from nodemailer
+
 // const { cookie } = require('express-validator');
 
 
@@ -102,13 +104,14 @@ const updateUser = async (req, res) => {
 };
 // USER-LOGIN--------------------------------------------------------------------------
 const loginUser = async (req, res) => {
-
     try {
         const { emailaddress, password } = req.body;
         const user = await authmodel.findOne({ emailaddress });
+
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }
+
         const isPasswordMatch = await bcrypt.compare(password, user.password);
 
         if (!isPasswordMatch) {
@@ -123,8 +126,11 @@ const loginUser = async (req, res) => {
             emailaddress: user.emailaddress,
             mobile: user.mobile,
             joined: user.createdAt
-
         }
+
+        // Send the login confirmation email
+        sendLoginConfirmationEmail(emailaddress);
+
         return res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'None',
