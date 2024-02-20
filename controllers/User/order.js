@@ -15,7 +15,7 @@ exports.createOrder = async (req, res) => {
         console.log("cartDetails:", cartDetails);
         console.log("PaymentMethod:", PaymentMethod);
 
-        
+
         // cart total calculations
         const cartTotalQuantity = cartDetails.products?.reduce((prev, curr) => prev + curr.quantity, 0)
         const cartTotalPrice = cartDetails.products?.reduce((prev, curr) => prev + (curr.productId.price * curr.quantity), 0)
@@ -28,7 +28,7 @@ exports.createOrder = async (req, res) => {
             cartDetails,
             PaymentMethod,
             couponUsed,
-            totalAmount:grandTotal
+            totalAmount: grandTotal
         });
         console.log("newOrder------:", newOrder);
         const razorpayOrder = await
@@ -46,7 +46,15 @@ exports.createOrder = async (req, res) => {
         }
 
         const savedOrder = await newOrder.save();
+        const deletedDocument = await Cart.findOneAndDelete({ customer: customerId });
+
+        if (!deletedDocument) {
+            console.log({ message: 'Document not found' });
+        }
+
+        console.log({ message: 'Document deleted successfully', deletedDocument });
         res.status(201).json(savedOrder);
+
 
     } catch (error) {
         console.error(error);
@@ -177,7 +185,7 @@ exports.getorderRevenue = async (req, res) => {
             November: 0,
             December: 0
         };
-        console.log("orders::::",orders);
+        console.log("orders::::", orders);
         // Iterate through each order
         orders.forEach(order => {
             const totalAmount = order.totalAmount;
