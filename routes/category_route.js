@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const uploader = require("../services/multer")
+const cloudinary = require("../services/cloudinary")
 const categoryController = require('../controllers/admin/categories');
 const { body, query, validationResult } = require("express-validator")
 
@@ -11,25 +13,29 @@ const { body, query, validationResult } = require("express-validator")
 const createValidator = [
     body("categoryName").notEmpty(),
     body("description").notEmpty(),
+    body("categoryImages").notEmpty(),
 ]
 
-router.post("/createCategory", createValidator, (req, res) => {
-    const error = validationResult(req)
-    if (!error.isEmpty()) {
-        return res.status(400).json({
-            statusCode: 400,
-            message: "Invalid inputs have been provided",
-            data: error.array(),
-        });
-    }
-    console.log(req.body)
-    // const reqBody=req.body
-    categoryController.createcategory(req.body).then(result => {
-        console.log(result);
-        res.status(result.statusCode).json(result)
-    })
+router.post('/createCategory', uploader.single("file"), categoryController.createcategory);
 
-})
+
+// router.post("/createCategory", createValidator, (req, res) => {
+//     const error = validationResult(req)
+//     if (!error.isEmpty()) {
+//         return res.status(400).json({
+//             statusCode: 400,
+//             message: "Invalid inputs have been provided",
+//             data: error.array(),
+//         });
+//     }
+//     console.log(req.body)
+//     // const reqBody=req.body
+//     categoryController.createcategory(req.body).then(result => {
+//         console.log(result);
+//         res.status(result.statusCode).json(result)
+//     })
+
+// })
 // Update 
 router.put("/updatecategory/:id", (req, res) => {
     const productId = req.params.id;
