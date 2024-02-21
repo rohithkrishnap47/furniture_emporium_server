@@ -1,35 +1,60 @@
 const categoryModal = require("../../models/categoryModel");
 const productModal = require("../../models/productModel")
+const cloudinary = require("../../services/cloudinary");
+
 
 // CATEGORIES
 // ADD_category
-const createcategory = async (categoryData) => {
-  console.log("categdata******", categoryData)
+const createcategory = async (req, res) => {
+  // console.log("categoryData:", categoryData)
 
 
   try {
-    const caT = await categoryModal.findOne({ categoryName: categoryData.categoryName })
-    console.log("cat_cons", caT);
-    if (caT) {
-      return {
+    const caT = req.body;
+    console.log("caT:", caT);
+
+    // Check if file exists in the request
+    if (!req.file) {
+      res.status(400).json({
+        statusCode: 400,
+        message: "No file found",
+      });
+    }
+    console.log("File received:", req.file);
+
+    const category = await categoryModal.findOne({ categoryName: caT.categoryname });
+
+    if (category) {
+      res.json ({
         statusCode: 400,
         message: "CATEGORY EXISTS",
-        data: caT.categoryName,
-      };
+        data: category.categoryName,
+      });
     }
+    console.log("Uploading file to Cloudinary...");
+    const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+    console.log("File uploaded to Cloudinary:", upload);
+
+
     const newcategories = new categoryModal({
-      categoryName: categoryData.categoryName,
-      categoryImages: categoryData.categoryImages,
-      description: categoryData.description,
+      categoryName: caT.categoryName,
+      categoryImages: upload.secure_url,
+      description: caT.description,
     })
     await newcategories.save()
-    return {
+    res.json ({
       statusCode: 200,
-      message: "category created"
-    }
+      message: "category created",
+      data: newcategories,
+
+    })
   }
   catch (error) {
     console.log(error);
+    res.status(500).json({
+      statusCode: 500,
+      message: "Internal server error",
+    });
   }
 
 };
