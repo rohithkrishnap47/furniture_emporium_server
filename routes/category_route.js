@@ -18,6 +18,7 @@ const createValidator = [
 
 router.post('/createCategory', uploader.single("file"), categoryController.createcategory);
 
+router.put("/updatecategory/:id", categoryController.updatecategory);
 
 // router.post("/createCategory", createValidator, (req, res) => {
 //     const error = validationResult(req)
