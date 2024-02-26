@@ -7,8 +7,6 @@ const cloudinary = require("../../services/cloudinary");
 // ADD_category
 const createcategory = async (req, res) => {
   // console.log("categoryData:", categoryData)
-
-
   try {
     const caT = req.body;
     console.log("caT:", caT);
@@ -108,36 +106,81 @@ const getcategoryById = (categoryId) => {
 
 //   UPDATE_CATEGOrIES
 
-const updatecategory = (categoryId, updatedcategoryData) => {
-  return categoryModal.findByIdAndUpdate(
-    categoryId,
-    updatedcategoryData,
-    { new: true }
-  )
-    .then((category) => {
-      if (!category) {
-        console.log("Category not found");
-        return {
-          statusCode: 404,
-          message: "Category not found",
-        };
-      }
-      console.log("Category updated successfully:", category);
-      return {
-        statusCode: 200,
-        message: "Category updated successfully",
-        data: category,
-      };
-    })
-    .catch((error) => {
-      console.error("Internal Server Error:", error);
-      return {
-        statusCode: 500,
-        message: "Internal Server Error",
-        error: error.message,
-      };
+// const updatecategory = (categoryId, updatedcategoryData) => {
+//   return categoryModal.findByIdAndUpdate(
+//     categoryId,
+//     updatedcategoryData,
+//     { new: true }
+//   )
+//     .then((category) => {
+//       if (!category) {
+//         console.log("Category not found");
+//         return {
+//           statusCode: 404,
+//           message: "Category not found",
+//         };
+//       }
+//       console.log("Category updated successfully:", category);
+//       return {
+//         statusCode: 200,
+//         message: "Category updated successfully",
+//         data: category,
+//       };
+//     })
+//     .catch((error) => {
+//       console.error("Internal Server Error:", error);
+//       return {
+//         statusCode: 500,
+//         message: "Internal Server Error",
+//         error: error.message,
+//       };
+//     });
+// };
+
+// UPDATE-CATEGORY-NEW-ONE
+const updatecategory = async (req, res) => {
+  try {
+    const categoryId = req.params.id;
+    const updatedcategoryData = req.body;
+
+    let uploadimg;
+    if (req.file) {
+      uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
+      console.log("uploadimg", uploadimg);
+      updatedcategoryData.images = uploadimg.secure_url;
+    }
+
+    const category = await categoryModal.findByIdAndUpdate(
+      categoryId,
+      updatedcategoryData,
+      { new: true }
+    );
+
+    if (!category) {
+      console.log("Category not found");
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Category not found",
+      });
+    }
+
+    console.log("Category updated successfully:", category);
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Category updated successfully",
+      data: category,
     });
+  } catch (error) {
+    console.error("Internal Server Error:", error);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
 };
+
+
 
 
 
