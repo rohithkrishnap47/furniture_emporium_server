@@ -11,8 +11,12 @@ router.get("/show-orders", orderController.getAllOrders)//verify user not needed
 router.get("/user-orders", verifyUser, orderController.getuserOrder)
 // USER-ORDER-REVENUE
 router.get("/user-orders-revenue", orderController.getorderRevenue)
+// ORDER-CHART
+router.get("/order-chart", orderController.getTotalAmountByMonth)
+// ORDER-CHART-pie
+router.get("/order-paymentmethod", orderController.generatePaymentMethodPieGraph)
 // CANCEL-ORDER
-router.patch("/delete-order", verifyUser, orderController.cancelOrder)
+router.post("/delete-order", orderController.cancelOrder)
 // CHANGE-STATUS
 router.patch("/update-order-status/:id", orderController.updateOrderStatus)
 // VERIFY-USER
