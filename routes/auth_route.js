@@ -7,7 +7,7 @@ router.post("/login", authController.loginUser)
 
 router.post("/register", authController.registerUser);
 
-router.post("/updateuser", authController.updateUser);
+router.post("/updateuser/:id", authController.updateUser);
 
 router.post("/forgotpassword", authController.forgotpassword)
 
