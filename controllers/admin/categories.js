@@ -1,3 +1,4 @@
+const { body } = require("express-validator");
 const categoryModal = require("../../models/categoryModel");
 const productModal = require("../../models/productModel")
 const cloudinary = require("../../services/cloudinary");
@@ -6,10 +7,9 @@ const cloudinary = require("../../services/cloudinary");
 // CATEGORIES
 // ADD_category
 const createcategory = async (req, res) => {
-  // console.log("categoryData:", categoryData)
   try {
-    const caT = req.body;
-    console.log("caT:", caT);
+    console.log("Received category data:", req.body);
+    const { categoryName, description } = req.body;
 
     // Check if file exists in the request
     if (!req.file) {
@@ -18,44 +18,47 @@ const createcategory = async (req, res) => {
         message: "No file found",
       });
     }
+
     console.log("File received:", req.file);
 
-    const category = await categoryModal.findOne({ categoryName: caT.categoryname });
-
-    if (category) {
-      res.json ({
+    // Check if category already exists
+    const existingCategory = await categoryModal.findOne({ categoryName: categoryName });
+    console.log(existingCategory, "007");
+    if (existingCategory) {
+      res.status(400).json({
         statusCode: 400,
-        message: "CATEGORY EXISTS",
-        data: category.categoryName,
+        message: "Category already exists",
+        data: existingCategory.categoryName,
       });
     }
+
     console.log("Uploading file to Cloudinary...");
     const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
     console.log("File uploaded to Cloudinary:", upload);
 
-
-    const newcategories = new categoryModal({
-      categoryName: caT.categoryName,
+    // Create new category
+    const newCategory = new categoryModal({
+      categoryName: categoryName,
       categoryImages: upload.secure_url,
-      description: caT.description,
-    })
-    await newcategories.save()
-    res.json ({
-      statusCode: 200,
-      message: "category created",
-      data: newcategories,
+      description: description,
+    });
 
-    })
-  }
-  catch (error) {
-    console.log(error);
+    await newCategory.save();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: "Category created",
+      data: newCategory,
+    });
+  } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({
       statusCode: 500,
       message: "Internal server error",
     });
   }
-
 };
+
 
 
 // GET_ALL_CATEGOrIES
@@ -141,18 +144,24 @@ const getcategoryById = (categoryId) => {
 const updatecategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
-    const updatedcategoryData = req.body;
+    const { categoryName, description } = req.body;
+
+    console.log("Request Body:", req.body);
 
     let uploadimg;
     if (req.file) {
       uploadimg = await cloudinary.uploader.upload(req.file.path, { resource_type: "image" });
-      console.log("uploadimg", uploadimg);
-      updatedcategoryData.images = uploadimg.secure_url;
+      console.log("Uploaded Image:", uploadimg);
     }
 
+    const updatedData = {};
+    if (categoryName) updatedData.categoryName = categoryName;
+    if (uploadimg) updatedData.categoryImages = uploadimg.secure_url;
+    if (description) updatedData.description = description;
+    console.log("updatedData",updatedData);
     const category = await categoryModal.findByIdAndUpdate(
-      categoryId,
-      updatedcategoryData,
+      { _id: categoryId },
+      updatedData,
       { new: true }
     );
 
@@ -164,10 +173,10 @@ const updatecategory = async (req, res) => {
       });
     }
 
-    console.log("Category updated successfully:", category);
-    return res.status(200).json({
+    console.log("Category updated SUCCESSFULLY :)", category);
+    res.status(200).json({
       statusCode: 200,
-      message: "Category updated successfully",
+      message: "Category updated SUCCESSFULLY :)",
       data: category,
     });
   } catch (error) {
