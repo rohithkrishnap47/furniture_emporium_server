@@ -5,6 +5,60 @@ const mongoose = require('mongoose');
 const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } = process.env;
 // const verifyUser  = require('../middlewares/verifyUser');
 
+// order-for pie chart
+
+exports.generatePaymentMethodPieGraph = async (req, res) => {
+    try {
+        const paymentMethodCounts = await Order.aggregate([
+            {
+                $group: {
+                    _id: "$PaymentMethod",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const data = paymentMethodCounts.map(method => ({
+            label: method._id,
+            value: method.count
+        }));
+
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+// order-for-chart.js
+exports.getTotalAmountByMonth = async (req, res) => {
+    try {
+        const orders = await Order.find({});
+
+        const monthlyTotal = {};
+        orders.forEach(order => {
+            const orderedDate = new Date(order.orderedDate);
+            const monthYear = `${orderedDate.getFullYear()}-${orderedDate.getMonth() + 1}`;
+
+
+            if (!monthlyTotal[monthYear]) {
+                monthlyTotal[monthYear] = 0;
+            }
+            monthlyTotal[monthYear] += order.totalAmount;
+        });
+
+        // Prepare data for Chart.js
+        const labels = Object.keys(monthlyTotal); // Months
+        const data = Object.values(monthlyTotal); // Total amount spent
+
+        res.status(200).json({ labels, data }); // Return data for Chart.js
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
 // Create a new order
 exports.createOrder = async (req, res) => {
     try {
@@ -144,19 +198,20 @@ exports.cancelOrder = async (req, res) => {
         const { orderId } = req.body;
 
         const order = await Order.findById(orderId);
-
+        console.log("order", order, orderId);
         if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
+            res.status(404).json({ error: 'Order not found' });
         }
+
 
         // Check if the order has already been delivered
         if (order.deliveryStatus === 'Delivered') {
-            return res.status(400).json({ error: 'Cannot cancel a delivered order' });
+            res.status(400).json({ error: 'Cannot cancel a delivered order' });
         }
 
         const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
-            { deliveryStatus: 'Cancelled' },
+            { deliveryStatus: 'Cancelled', isCancelled: true },
             { new: true }
         );
 
@@ -240,3 +295,4 @@ exports.getorderRevenue = async (req, res) => {
 };
 
 // ================================================================
+// module.exports = { getTotalAmountByMonth };
