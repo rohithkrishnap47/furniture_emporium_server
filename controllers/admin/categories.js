@@ -107,39 +107,6 @@ const getcategoryById = (categoryId) => {
 };
 
 
-//   UPDATE_CATEGOrIES
-
-// const updatecategory = (categoryId, updatedcategoryData) => {
-//   return categoryModal.findByIdAndUpdate(
-//     categoryId,
-//     updatedcategoryData,
-//     { new: true }
-//   )
-//     .then((category) => {
-//       if (!category) {
-//         console.log("Category not found");
-//         return {
-//           statusCode: 404,
-//           message: "Category not found",
-//         };
-//       }
-//       console.log("Category updated successfully:", category);
-//       return {
-//         statusCode: 200,
-//         message: "Category updated successfully",
-//         data: category,
-//       };
-//     })
-//     .catch((error) => {
-//       console.error("Internal Server Error:", error);
-//       return {
-//         statusCode: 500,
-//         message: "Internal Server Error",
-//         error: error.message,
-//       };
-//     });
-// };
-
 // UPDATE-CATEGORY-NEW-ONE
 const updatecategory = async (req, res) => {
   try {
