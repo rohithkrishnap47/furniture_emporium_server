@@ -21,13 +21,12 @@ const bannerSchema = new Schema({
         type: String,
         enum: ["product", "category"], // Enum for allowed values
         required: true,
-      },
-      relatedItemId: {
+    },
+    relatedItemId: {
         type: String,
-        // type: mongoose.Schema.Types.ObjectId,
         refPath: "clickType", // Dynamic reference to 'Product' or 'Category' model
         required: true,
-      },
+    },
 })
 const Banner = mongoose.model("Banner", bannerSchema);
 module.exports = Banner
