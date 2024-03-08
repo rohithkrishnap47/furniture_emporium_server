@@ -28,7 +28,7 @@ async function verifyUser(req, res, next) {
     throw new Error(401, "Unauthorized", []);
   } catch (error) {
     console.log(error);
-    next(new Error (401, "Unauthorized", []));
+    next(new Error(401, "Unauthorized", []));
   }
 }
 
