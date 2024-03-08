@@ -20,8 +20,8 @@ const addressSchema = new Schema({
         type: String,
     },
     // newlyadded----------------------------
-    contactNumber:{
-        type:Number
+    contactNumber: {
+        type: Number
     },
     // --------------------------------------
     password: {
