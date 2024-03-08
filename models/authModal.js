@@ -20,11 +20,11 @@ const authSchema = new Schema({
         type: String,
         required: true
     },
-    isblocked:{
-        type:Boolean
+    isblocked: {
+        type: Boolean
     },
-    mobile:{
-        type:String
+    mobile: {
+        type: String
     },
     createdAt: {
         type: Date,
@@ -42,7 +42,7 @@ const authSchema = new Schema({
     }
 });
 
-authSchema.pre('save', function(next) {
+authSchema.pre('save', function (next) {
     this.updatedAt = new Date();
     next();
 });
