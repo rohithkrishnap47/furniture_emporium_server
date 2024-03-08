@@ -22,7 +22,7 @@ const contactSchema = new Schema({
         type: String,
         required: true
     }
-}, { timestamps: true }); 
+}, { timestamps: true });
 
 const Contact = mongoose.model('Contact', contactSchema);
 module.exports = Contact;
