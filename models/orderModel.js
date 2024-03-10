@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const moment = require("moment"); 
+const moment = require("moment");
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
@@ -24,7 +24,7 @@ const orderSchema = new Schema({
     },
     PaymentMethod: {
         type: String,
-        enum: ["COD", "ONLINE","checkoutPaymentPaypal"]
+        enum: ["COD", "ONLINE", "checkoutPaymentPaypal"]
     },
     paymentStatus: {
         type: String,
@@ -50,12 +50,12 @@ const orderSchema = new Schema({
     },
     deliveryStatus: {
         type: String,
-        enum: ["Pending",  "Shipped", "Delivered","Cancelled"],
+        enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
         default: "Pending"
     }
 });
 
-orderSchema.pre('save', function(next) {
+orderSchema.pre('save', function (next) {
     if (!this.deliveredDate) {
         this.deliveredDate = moment(this.orderedDate).add(1, 'day').toDate();
     }
