@@ -33,7 +33,6 @@ const productSchema = new mongoose.Schema({
     },
     selling_price: {
         type: Number,
-        // required: true
     }
 });
 
