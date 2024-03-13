@@ -5,17 +5,14 @@ const router = express.Router()
 
 // ADMIN_ROUTE
 router.post("/adminRegister", (req, res) => {
-    // console.log(req.body)
     adminController.registerAdmin(req.body).then(result => {
         res.status(result.statusCode).json(result)
-        // console.log("helloooo",result.statusCode);
     })
 })
 // Update 
 router.put("/updateAdmin/:id", (req, res) => {
     const productId = req.params.id;
     const updateddata = req.body;
-    // console.log(updateddata);
     adminController.updateAdmin(productId, updateddata).then(result => {
         res.status(result.statusCode).json(result)
     })
@@ -42,17 +39,9 @@ router.delete("/deleteAdmin/:id", (req, res) => {
     const productId = req.params.id;
 
     adminController.deleteAdmin(productId).then(result => {
-        res.status(result.statusCode).json(result); 
+        res.status(result.statusCode).json(result);
     });
 });
-
-
-
-
-
-
-
-
 
 // --------------------------------------------------------------------------------------
 module.exports = router 
