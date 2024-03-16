@@ -3,7 +3,7 @@ const router = express.Router();
 const bannerController = require('../controllers/admin/banner');
 const uploader = require("../services/multer")
 const cloudinary = require("../services/cloudinary")
-const {check}=require("express-validator")
+const { check } = require("express-validator")
 
 const bannerValidator = [
     // body("bannerImage").notEmpty(),
@@ -15,7 +15,7 @@ const bannerValidator = [
 
 
 // Create Banner
-router.post("/createbanner", uploader.single("file"),bannerValidator, bannerController.createBanner);
+router.post("/createbanner", uploader.single("file"), bannerValidator, bannerController.createBanner);
 
 
 // Update Banner
