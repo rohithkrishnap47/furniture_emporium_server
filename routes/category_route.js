@@ -20,23 +20,6 @@ router.post('/createCategory', uploader.single("file"), categoryController.creat
 
 router.put("/updatecategory/:id", uploader.single("file"), categoryController.updatecategory);
 
-// router.post("/createCategory", createValidator, (req, res) => {
-//     const error = validationResult(req)
-//     if (!error.isEmpty()) {
-//         return res.status(400).json({
-//             statusCode: 400,
-//             message: "Invalid inputs have been provided",
-//             data: error.array(),
-//         });
-//     }
-//     console.log(req.body)
-//     // const reqBody=req.body
-//     categoryController.createcategory(req.body).then(result => {
-//         console.log(result);
-//         res.status(result.statusCode).json(result)
-//     })
-
-// })
 // Update 
 router.put("/updatecategory/:id", (req, res) => {
     const productId = req.params.id;
