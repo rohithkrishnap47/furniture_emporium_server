@@ -8,11 +8,7 @@ const { verifyUser } = require('../middlewares/verifyUser'); // Your user verifi
 
 
 
-// router.post("/register", (req, res) => {
-//     userController.registerUser(req.body).then(result => {
-//         res.status(result.statusCode).json(result)
-//     })
-// })
+
 
 router.get("/getuser/:id", (req, res) => {
     const userId = req.params.id;
@@ -41,7 +37,7 @@ router.post("/add-address", verifyUser, userinfo.addShipmentAddress)
 // UPDATE-SHIPMENT-ADDRESS
 router.post("/update-address", verifyUser, userinfo.updateShipmentAddress)
 // GET-USER-BY-ID
-router.get("/get-address",  userinfo.getAddressById)
+router.get("/get-address", userinfo.getAddressById)
 
 // router.get('/get-contacts', userinfo.getAllContacts);
 // router.post('/add-contacts', userinfo.createContact);
