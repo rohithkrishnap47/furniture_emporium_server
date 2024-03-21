@@ -3,7 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/admin/product');
 const uploader = require("../services/multer")
 const cloudinary = require("../services/cloudinary")
-const {check}=require("express-validator")
+const { check } = require("express-validator")
 const productCreateValidator = [
     check("name").notEmpty(),
     check("category").notEmpty(),
@@ -14,11 +14,10 @@ const productCreateValidator = [
 ]
 // Create a new product
 
-router.post('/createProducts',uploader.single("file"), productCreateValidator,productController.createProduct);
+router.post('/createProducts', uploader.single("file"), productCreateValidator, productController.createProduct);
 
 // Update a product by ID
-router.put('/UpdateProducts/:id',uploader.single("file"), productController.updateProduct);
-// router.put('/UpdateProducts/:id', (req, res) => productController.updateProduct(req,res))
+router.put('/UpdateProducts/:id', uploader.single("file"), productController.updateProduct);
 
 // Get a product by ID
 router.get('/products/:id', async (req, res) => {
@@ -33,7 +32,7 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // Get all products
-router.get('/productsAll',productController.getAllProducts);
+router.get('/productsAll', productController.getAllProducts);
 
 // Delete a product by ID
 router.delete('/products/:id', async (req, res) => {
@@ -51,16 +50,16 @@ router.delete('/products/:id', async (req, res) => {
 // product file upload
 
 
-router.post('/upload-products',uploader.single("file"), async (req, res) => {
+router.post('/upload-products', uploader.single("file"), async (req, res) => {
     try {
-        console.log("req",req.file)
-        const upload = await cloudinary.uploader.upload(req.file.path,{ resource_type: "raw" });
+        console.log("req", req.file)
+        const upload = await cloudinary.uploader.upload(req.file.path, { resource_type: "raw" });
         return res.json({
-          success: true,
-          file: upload.secure_url,
+            success: true,
+            file: upload.secure_url,
         });
     } catch (error) {
-      console.log(error)
+        console.log(error)
     }
 });
 
