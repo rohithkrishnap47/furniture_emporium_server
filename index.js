@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Update CORS configuration to include specific origin
 const corsOptions = {
-  origin: 'https://furnitureemporium.vercel.app',
+  origin: ['https://furnitureemporium.vercel.app','https://adminfurnitureemporium.vercel.app'],
   credentials: true  // Allow credentials
 };
 app.use(cors(corsOptions));
