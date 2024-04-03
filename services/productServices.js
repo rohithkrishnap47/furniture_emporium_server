@@ -18,7 +18,7 @@ exports.getAllproducts = async (options, sort) => {
     }
     if (options.minPrice !== undefined || options.maxPrice !== undefined) {
         let priceRangeCondition = {};
- 
+
         if (options.minPrice !== undefined) {
             priceRangeCondition.$gte = options.minPrice;
         }
@@ -42,9 +42,9 @@ exports.getAllproducts = async (options, sort) => {
                 price: 1,               // Project 'price' as is
                 images: 1,
                 discount: 1,
-                category:1,
-                stock:1,
-                warranty:1
+                category: 1,
+                stock: 1,
+                warranty: 1
             }
         },
     );

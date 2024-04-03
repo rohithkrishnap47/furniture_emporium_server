@@ -1,5 +1,5 @@
 const generateOTP = () => {
-    const length=6;
+    const length = 6;
     const characters = '0123456789';
     let OTP = '';
 
@@ -20,4 +20,4 @@ function generateRandomString(length) {
     }
     return randomString;
 }
-module.exports={generateOTP,generateRandomString};
+module.exports = { generateOTP, generateRandomString };

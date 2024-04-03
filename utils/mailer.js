@@ -54,4 +54,4 @@ const sendLoginConfirmationEmail = (email) => {
 }
 
 
-module.exports = { sentOTP ,sendLoginConfirmationEmail}
+module.exports = { sentOTP, sendLoginConfirmationEmail }
