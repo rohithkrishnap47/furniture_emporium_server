@@ -31,6 +31,28 @@ const sentOTP = (email, otp) => {
     });
 }
 
+// CONTACT-US
+const contactemail = (email,name, content) => {
+    const mailOptions = {
+        from: email,
+        to: 'filesrk@gmail.com',
+        subject: 'Contact Form',
+        text: `From User,${name}\n\n`
+            + `${content}`
+
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+}
+
+
+
+
 const sendLoginConfirmationEmail = (email) => {
     const mailOptions = {
         from: 'filesrkp@gmail.com',
@@ -54,4 +76,4 @@ const sendLoginConfirmationEmail = (email) => {
 }
 
 
-module.exports = { sentOTP, sendLoginConfirmationEmail }
+module.exports = { sentOTP, sendLoginConfirmationEmail ,contactemail}

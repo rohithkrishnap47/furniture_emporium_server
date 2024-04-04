@@ -1,6 +1,7 @@
 const addressModal = require("../../models/addressModal")
 const authModal = require('../../models/authModal');
-const Contact = require('../../models/contactUsModel');
+const Contact = require('../../models/contactUsModel')
+const mailer = require("../../utils/mailer")
 
 
 // ADD-SHIPMENT-ADDRESS
@@ -42,7 +43,7 @@ const getAddressById = async (req, res) => {
         const addressId = req.query.addressId;
         console.log("addressId", addressId);
 
-        if (!addressId ) {
+        if (!addressId) {
             return res.status(400).json({
                 statusCode: 400,
                 message: "Valid Address ID is required."
@@ -169,11 +170,29 @@ exports.deleteContact = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+const contactUs = async (req, res) => {
+    try {
+        const data = req.body
+        if (!data?.email.length || !data?.message.length) {
+            return res.status(404).json({ message: 'enter valid data' });
+        }
+        const mail = await mailer.contactemail(data?.email, data?.firstName, data?.message)
+        if (!mail) {
+            return res.status(404).json({ message: 'error' });
+        }
+        res.json({ message: ' successfully' });
+
+    } catch (error) {
+        res.status(500).json({ message: err.message });
+    }
+}
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 module.exports = {
     addShipmentAddress,
     updateShipmentAddress,
-    getAddressById
+    getAddressById,
+    contactUs
 }
