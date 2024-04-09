@@ -32,23 +32,27 @@ const sentOTP = (email, otp) => {
 }
 
 // CONTACT-US
-const contactemail = (email,name, content) => {
-    const mailOptions = {
-        from: email,
-        to: 'filesrk@gmail.com',
-        subject: 'Contact Form',
-        text: `From User,${name}\n\n`
-            + `${content}`
+const contactemail = (email, name, content) => {
+    return new Promise((resolve, reject) => {
+        const mailOptions = {
+            from: email,
+            to: 'filesrkp@gmail.com',
+            subject: 'Contact Form',
+            text: `From User: ${name}\n\n${content}`
+        };
 
-    };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error sending email:', error);
-        } else {
-            console.log('Email sent:', info.response);
-        }
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                reject(error);
+            } else {
+                console.log('Email sent:', info.response);
+                resolve(info.response);
+            }
+        });
     });
-}
+};
+
 
 
 
@@ -76,4 +80,4 @@ const sendLoginConfirmationEmail = (email) => {
 }
 
 
-module.exports = { sentOTP, sendLoginConfirmationEmail ,contactemail}
+module.exports = { sentOTP, sendLoginConfirmationEmail, contactemail }
