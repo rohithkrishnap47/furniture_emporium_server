@@ -139,6 +139,23 @@ exports.getuserOrder = async (req, res) => {
     }
 };
 
+// get last order for invoice
+
+exports.getorderbyId = async (req, res) => {
+    try {
+        const orderid = mongoose.Types.ObjectId(req.params.orderId)
+        const order = await Order.findOne({ _id: orderid }).populate("product deliveryAddress")
+
+        if (!order) {
+            res.status(404).json({ error: 'Order Not Found' });
+        }
+        res.status(200).json(order)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 // Update order status
 exports.updateOrderStatus = async (req, res) => {
